@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>shanshan Brain Inc.</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Caveat:wght@600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+  :root{
+    --ink:#1a1530;
+    --paper:#f5efe2;
+    --panel:#fffdf7;
+    --line:#2a2342;
+    --amyg:#e8553d;
+    --hippo:#3d9b8f;
+    --dmn:#c77dd6;
+    --acc:#e0a32e;
+    --ceo:#4767c4;
+    --shan:#d36b8a;
+    --chacha:#6b6580;
+    --shadow:rgba(26,21,48,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(circle at 18% 8%, rgba(199,125,214,.10), transparent 40%),
+      radial-gradient(circle at 90% 92%, rgba(71,103,196,.10), transparent 45%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Space Grotesk','Noto Sans SC',sans-serif;
+    min-height:100%;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    padding:24px 16px;
+  }
+  body.zh{font-family:'Noto Sans SC','Space Grotesk',sans-serif}
+
+  /* layout: single centered column — stage, then Chacha's narration, then footer */
+  .wrap{
+    width:100%;max-width:760px;
+    display:flex;flex-direction:column;gap:18px;align-items:stretch;
+  }
+  .stage{min-width:0}
+
+  /* ---- Top bar ---- */
+  .topbar{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+    margin-bottom:14px;flex-wrap:wrap;
+  }
+  .eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--chacha);font-weight:500;margin-bottom:8px}
+  .title{font-size:clamp(28px,6vw,48px);font-weight:700;letter-spacing:-.02em;line-height:1}
+  .title .inc{color:var(--amyg)}
+  .subtitle{font-family:'Caveat',cursive;font-size:21px;color:var(--ceo);margin-top:4px;transform:rotate(-1.5deg)}
+  body.zh .subtitle{font-family:'Noto Sans SC',sans-serif;font-size:15px;font-weight:500;transform:none}
+
+  .lang{display:flex;border:2px solid var(--line);border-radius:999px;overflow:hidden;font-size:13px;font-weight:700;background:var(--panel);box-shadow:3px 3px 0 var(--shadow)}
+  .lang button{border:0;background:transparent;color:var(--ink);padding:7px 15px;cursor:pointer;font-family:inherit;font-weight:700;transition:.15s}
+  .lang button.on{background:var(--ink);color:var(--paper)}
+
+  /* ---- Act carousel (3-card sliding window) ---- */
+  .actnav{display:flex;align-items:stretch;gap:10px;margin-bottom:9px}
+  .navarrow{
+    flex:0 0 auto;width:42px;border:2px solid rgba(42,35,66,.18);
+    border-radius:14px;background:rgba(255,253,247,.55);backdrop-filter:blur(4px);
+    color:var(--line);font-size:24px;font-weight:700;line-height:1;cursor:pointer;
+    font-family:'Space Grotesk',sans-serif;
+    transition:transform .12s,background .15s,border-color .15s,opacity .15s;
+  }
+  .navarrow:hover{background:rgba(255,253,247,.95);border-color:rgba(42,35,66,.4)}
+  .navarrow:active{transform:scale(.94)}
+  .navarrow:disabled{opacity:.25;cursor:default;transform:none}
+  .actwindow{flex:1 1 auto;min-width:0;overflow:hidden}
+  .acttrack{display:flex;gap:8px;transition:transform .32s cubic-bezier(.34,1.3,.64,1)}
+  .actcard{
+    flex:0 0 calc((100% - 16px)/3);min-width:0;cursor:pointer;text-align:center;
+    border:2.5px solid var(--line);border-radius:14px;padding:9px 8px;
+    background:var(--panel);color:var(--ink);box-shadow:3px 3px 0 var(--shadow);
+    font-family:inherit;line-height:1.18;transition:background .18s,color .18s,transform .12s;
+    display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;
+  }
+  .actcard:active{transform:translateY(1px)}
+  .actcard.on{background:var(--ceo);color:#fff;border-color:var(--ceo)}
+  .actcard-no{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;opacity:.7}
+  .actcard.on .actcard-no{opacity:.85}
+  .actcard-title{font-size:clamp(12px,2.6vw,15px);font-weight:700;letter-spacing:-.01em}
+  .actcard-sub{font-size:9.5px;font-weight:500;color:var(--chacha)}
+  .actcard.on .actcard-sub{color:rgba(255,255,255,.82)}
+  body.zh .actcard-no{letter-spacing:.12em}
+  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:13px}
+  .dot{width:8px;height:8px;border-radius:50%;border:2px solid var(--line);
+    background:transparent;cursor:pointer;padding:0;transition:.15s}
+  .dot.on{background:var(--ceo);border-color:var(--ceo);transform:scale(1.15)}
+  @media (max-width:520px){
+    .actcard-title{font-size:12px}.actcard-sub{display:none}
+    .navarrow{width:36px;font-size:21px}
+  }
+
+  /* ---- Office room ---- */
+  .room{
+    position:relative;
+    background:repeating-linear-gradient(0deg,transparent 0 38px,rgba(42,35,66,.04) 38px 39px),var(--panel);
+    border:3px solid var(--line);border-radius:18px;box-shadow:8px 8px 0 var(--shadow);
+    padding:20px 18px 18px;overflow:hidden;
+  }
+  .pane{position:absolute;top:16px;right:16px;width:90px;height:60px;background:linear-gradient(160deg,#bfe0ff,#e7f2ff);border:3px solid var(--line);border-radius:6px;pointer-events:none}
+  .pane::before,.pane::after{content:"";position:absolute;background:var(--line)}
+  .pane::before{left:50%;top:0;bottom:0;width:3px;transform:translateX(-50%)}
+  .pane::after{top:50%;left:0;right:0;height:3px;transform:translateY(-50%)}
+
+  .scenetag{display:inline-block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--paper);background:var(--line);padding:5px 11px;border-radius:7px;margin-bottom:16px}
+
+  /* ---- Cast row ---- */
+  .cast{display:flex;justify-content:space-between;gap:6px;margin:4px 2px 18px;flex-wrap:wrap}
+  .seat{flex:1 1 0;min-width:72px;text-align:center;position:relative;transition:transform .3s cubic-bezier(.34,1.56,.64,1),filter .3s;filter:grayscale(.45) opacity(.6);cursor:pointer}
+  .seat.active{filter:none;transform:translateY(-8px) scale(1.06)}
+  .seat.active .av{animation:bob .9s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  .av{width:60px;height:60px;border-radius:50%;margin:0 auto 7px;border:3px solid var(--line);position:relative;box-shadow:3px 3px 0 var(--shadow);display:flex;align-items:center;justify-content:center}
+  .av svg{width:40px;height:40px}
+  .seat .role{font-size:11px;font-weight:700;line-height:1.15}
+  .seat .org{font-size:9.5px;color:var(--chacha);margin-top:1px}
+  .speechdot{display:none;position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:var(--amyg)}
+  .seat.active .speechdot{display:block;animation:pulse 1.1s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(232,85,61,.5)}100%{box-shadow:0 0 0 12px rgba(232,85,61,0)}}
+  .av.amyg{background:#fde3de}.av.hippo{background:#dcf0ec}.av.dmn{background:#f6e2fa}.av.acc{background:#fbeecb}.av.ceo{background:#dde5fa}
+  .av.shan{background:#fbe0ea}
+
+  /* ---- The Chairman's own seat (you) ---- */
+  /* Acts 1–4: present but barely there — a faint, almost-transparent observer. */
+  .seat.shan{filter:grayscale(.7) opacity(.28)}
+  .seat.shan .av{border-style:dashed}
+  .seat.shan .role{color:var(--shan)}
+  .seat.shan .crown{
+    position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+    font-size:13px;opacity:0;transition:opacity .4s;pointer-events:none;
+  }
+  /* Act 5 onward: the Chairman wakes up — full colour, solid ring, a small crown,
+     and a permanent glow so she reads as the lead even when not the active speaker. */
+  body.shan-awake .seat.shan{
+    filter:none;
+    animation:shanWake .8s cubic-bezier(.34,1.56,.64,1);
+  }
+  body.shan-awake .seat.shan .av{
+    border-style:solid;border-color:var(--shan);
+    box-shadow:3px 3px 0 var(--shadow),0 0 0 4px rgba(211,107,138,.18);
+  }
+  body.shan-awake .seat.shan .crown{opacity:1}
+  @keyframes shanWake{
+    0%{filter:grayscale(.7) opacity(.28);transform:scale(.9)}
+    60%{filter:none;transform:scale(1.12)}
+    100%{filter:none;transform:scale(1)}
+  }
+  /* keep her speech pulse in her own colour */
+  .seat.shan .speechdot{background:var(--shan)}
+
+  /* ---- Dialogue ---- */
+  .stagebox{min-height:170px;position:relative}
+  .bubble{position:relative;border:3px solid var(--line);border-radius:16px;padding:15px 17px;background:var(--panel);box-shadow:5px 5px 0 var(--shadow);opacity:0;transform:translateY(14px);animation:rise .4s forwards}
+  @keyframes rise{to{opacity:1;transform:translateY(0)}}
+  .bubble .who{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
+  .badge{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .badge svg{width:14px;height:14px}
+  .whoname{font-weight:700;font-size:14px}
+  .whoorg{font-size:11px;color:var(--chacha);font-weight:500}
+  .line{font-size:15.5px;line-height:1.55}
+  .line em{font-style:normal;font-weight:700}
+  .line .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;padding:2px 8px;border-radius:6px;border:2px solid var(--line);margin:2px 4px 2px 0;background:var(--panel)}
+
+  .bubble.amyg{border-left-width:9px;border-left-color:var(--amyg)}
+  .bubble.hippo{border-left-width:9px;border-left-color:var(--hippo)}
+  .bubble.dmn{border-left-width:9px;border-left-color:var(--dmn)}
+  .bubble.acc{border-left-width:9px;border-left-color:var(--acc)}
+  .bubble.ceo{border-left-width:9px;border-left-color:var(--ceo)}
+  .bubble.shan{border-left-width:9px;border-left-color:var(--shan)}
+  .badge.amyg{background:#fde3de}.badge.hippo{background:#dcf0ec}.badge.dmn{background:#f6e2fa}.badge.acc{background:#fbeecb}.badge.ceo{background:#dde5fa}.badge.shan{background:#fbe0ea}.badge.chacha{background:#e6e3ee}
+
+  .stamp{display:inline-block;font-family:'Caveat',cursive;font-weight:700;font-size:24px;color:var(--acc);transform:rotate(-6deg);border:3px solid var(--acc);border-radius:8px;padding:0 10px;box-shadow:2px 2px 0 rgba(224,163,46,.3)}
+  body.zh .stamp{font-family:'Noto Sans SC',sans-serif;font-size:17px}
+  .teardrop{font-size:20px;letter-spacing:6px}
+
+  /* Act 3: shanshan's real spoken line, shown above the brain reactions */
+  .shanline{
+    display:flex;gap:11px;align-items:flex-start;
+    border:3px solid var(--line);border-left-width:9px;border-left-color:#d36b8a;
+    border-radius:16px;padding:14px 16px;background:#fdf1f4;
+    box-shadow:5px 5px 0 var(--shadow);margin-bottom:14px;
+    opacity:0;transform:translateY(14px);animation:rise .4s forwards;
+  }
+  .shanline .sav{width:38px;height:38px;border-radius:50%;border:3px solid var(--line);
+    background:#fbe0ea;display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:18px;overflow:hidden}
+  .shanline .sav svg{width:30px;height:30px}
+  .shanline .scontent .swho{font-weight:700;font-size:13px;color:#b14a68;margin-bottom:2px;letter-spacing:.02em}
+  .shanline .stext{font-size:16px;line-height:1.5;font-style:italic;color:#5a2f3c}
+  .react-label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--chacha);margin:2px 2px 8px}
+
+  /* ---- Controls ---- */
+  .controls{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+  .btn{font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;border:3px solid var(--line);border-radius:12px;padding:11px 20px;background:var(--ceo);color:#fff;box-shadow:4px 4px 0 var(--shadow);transition:transform .1s,box-shadow .1s}
+  .btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--shadow)}
+  .btn.ghost{background:var(--panel);color:var(--ink)}
+  .btn:disabled{opacity:.4;cursor:default}
+  .progress{flex:1 1 110px;height:10px;border:2px solid var(--line);border-radius:999px;background:var(--panel);overflow:hidden;min-width:90px}
+  .progress>i{display:block;height:100%;width:0;background:var(--dmn);transition:width .4s ease}
+  .counter{font-size:12px;color:var(--chacha);font-weight:600;font-variant-numeric:tabular-nums}
+
+  /* ---- Chacha narrator panel (now a full-width block beneath the stage) ---- */
+  .chacha-panel{
+    border:3px solid var(--line);border-radius:18px;
+    background:linear-gradient(180deg,#efecf6,#e6e3ee);
+    box-shadow:8px 8px 0 var(--shadow);
+    padding:18px 18px;display:flex;flex-direction:column;gap:12px;
+  }
+  .chacha-head{display:flex;align-items:center;gap:10px}
+  .chacha-ava{width:46px;height:46px;border-radius:14px;border:3px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .chacha-ava svg{width:30px;height:30px}
+  .chacha-name{font-weight:700;font-size:15px;line-height:1.1}
+  .chacha-sub{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--chacha);font-weight:600;margin-top:2px}
+  .chacha-quote{
+    background:#fff;border:2.5px dashed var(--chacha);border-radius:14px;
+    padding:15px 18px 15px 28px;font-size:14.5px;line-height:1.6;font-style:italic;color:#3b3550;
+    position:relative;
+    opacity:0;transform:translateY(8px);animation:rise .4s forwards;
+  }
+  .chacha-quote::before{content:"“";position:absolute;top:4px;left:10px;font-size:30px;color:var(--chacha);opacity:.4;font-family:'Caveat',cursive}
+  .chacha-tip{font-size:11px;color:var(--chacha);line-height:1.4;text-align:center}
+  .chacha-tip b{color:var(--ceo)}
+
+  .hint{text-align:center;margin-top:2px;font-size:12.5px;color:var(--chacha)}
+  .hint b{color:var(--ceo)}
+
+  /* ---- Copyright / legal footer (full-width, very bottom) ---- */
+  .copyright{
+    margin-top:14px;padding:26px 24px 10px;text-align:center;
+    line-height:1.8;color:#6b6580;
+    border-top:1px solid rgba(107,101,128,0.20);
+  }
+  .copyright-title{font-size:15px;font-weight:700;letter-spacing:.04em;color:var(--ink);margin-bottom:12px}
+  .copyright p{margin:10px auto;max-width:680px;font-size:13.5px}
+  .copyright-small{font-size:11px;opacity:.70}
+  .copyright-quote{margin-top:20px;font-style:italic;font-size:15px;font-weight:600;color:var(--ceo);letter-spacing:.02em}
+
+  /* ---- Responsive ---- */
+  @media (max-width:520px){
+    .seat{min-width:60px}.av{width:50px;height:50px}.av svg{width:32px;height:32px}
+    .pane{width:66px;height:46px}.line{font-size:14.5px}
+  }
+  @media (prefers-reduced-motion: reduce){
+  *{
+    animation:none!important;
+    transition:none!important;
+  }
+  .bubble,
+  .shanline,
+  .chacha-quote{
+    opacity:1!important;
+    transform:none!important;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- LEFT: stage -->
+  <div class="stage" style="min-width:0">
+    <div class="topbar">
+      <div>
+        <div class="eyebrow" data-en="Five departments · one Chairman" data-zh="五个部门 · 一位董事长">Five departments · one Chairman</div>
+        <div class="title">shanshan Brain <span class="inc">Inc.</span></div>
+        <div class="subtitle" id="subtitle"></div>
+      </div>
+      <div class="lang" role="group" aria-label="language">
+        <button id="enBtn" class="on" onclick="setLang('en')">EN</button>
+        <button id="zhBtn" onclick="setLang('zh')">中文</button>
+      </div>
+    </div>
+
+    <div class="actnav">
+      <button class="navarrow" id="prevAct" onclick="slideWindow(-1)" aria-label="previous acts">‹</button>
+      <div class="actwindow"><div class="acttrack" id="acttrack"></div></div>
+      <button class="navarrow" id="nextAct" onclick="slideWindow(1)" aria-label="next acts">›</button>
+    </div>
+    <div class="dots" id="dots"></div>
+
+    <div class="room">
+      <div class="pane"></div>
+      <span class="scenetag" id="scenetag"></span>
+      <div class="cast" id="cast"></div>
+      <div class="stagebox" id="stagebox"></div>
+
+      <div class="controls">
+        <button class="btn" id="nextBtn" onclick="next()">▶ <span id="nextLabel"></span></button>
+        <button class="btn ghost" id="restartBtn" onclick="restart()" data-en="Restart" data-zh="重播">Restart</button>
+        <div class="progress"><i id="bar"></i></div>
+        <span class="counter" id="counter">0 / 0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Chacha narrator -->
+  <aside class="chacha-panel">
+    <div class="chacha-head">
+      <div class="chacha-ava" id="chachaAva"></div>
+      <div>
+        <div class="chacha-name">Chacha</div>
+        <div class="chacha-sub" data-en="Board observer" data-zh="董事会观察员">Board observer</div>
+      </div>
+    </div>
+    <div class="chacha-quote" id="chachaQuote"></div>
+    <div class="chacha-tip">
+      <span data-en="The board observer, advising the Chairman on what each department is really doing." data-zh="董事会观察员，向董事长说明每个部门此刻到底在做什么。">The board observer, advising the Chairman on what each department is really doing.</span>
+    </div>
+  </aside>
+
+  <div class="hint">
+    <span data-en="Tap" data-zh="点击">Tap</span> <b data-en="Next" data-zh="下一步">Next</b>
+    <span data-en="· space / → advances · click a character to jump · use the ‹ › arrows or dots to change act" data-zh="· 空格 / → 推进 · 点角色头像可跳到它 · 用 ‹ › 箭头或圆点切换幕">· space / → advances · click a character to jump · use the ‹ › arrows or dots to change act</span>
+  </div>
+
+  <!-- BOTTOM: copyright / legal -->
+  <footer class="copyright">
+    <p class="copyright-title">© 2026 Shanshan Mao</p>
+    <p>
+      <strong>shanshan Brain Inc.</strong> is an original creative and educational
+      project exploring cognition, metacognition, memory, emotion,
+      self-reflection, and human growth through narrative design,
+      computational thinking, and interactive experiences.
+    </p>
+    <p>
+      All characters, concepts, stories, dialogues, visual elements,
+      illustrations, and related content are original works created by
+      Shanshan Mao unless otherwise stated.
+    </p>
+    <p>
+      This project is part of an ongoing journey to understand how minds
+      learn, adapt, imagine, suffer, recover, and create meaning.
+    </p>
+    <p class="copyright-small">
+      Please do not reproduce, redistribute, or modify substantial portions
+      of this work without permission.
+    </p>
+    <p class="copyright-quote">From anxiety to narrative.</p>
+  </footer>
+</div>
+
+<script>
+/* ---------- Icons ---------- */
+const ICON = {
+  amyg:`<svg viewBox="0 0 40 40" fill="none" stroke="#1a1530" stroke-width="2.4" stroke-linecap="round"><path d="M20 5l4 4 5-1 1 5 4 4-3 5 1 5-5 2-3 4-5-2-5 2-3-4-5-2 1-5-3-5 4-4 1-5 5 1z" fill="#e8553d" stroke="#1a1530"/><path d="M14 17l3 3M26 17l-3 3M14 20l3-3M26 20l-3-3"/><path d="M15 27c2 2 8 2 10 0"/></svg>`,
+  hippo:`<svg viewBox="0 0 40 40" fill="none" stroke="#1a1530" stroke-width="2.4" stroke-linecap="round"><path d="M10 28c-4-3-3-12 3-16 5-3 12-2 14 4 1.5 4-1 7-4 6" fill="#3d9b8f" stroke="#1a1530"/><circle cx="16" cy="18" r="1.6" fill="#1a1530"/><circle cx="23" cy="18" r="1.6" fill="#1a1530"/><path d="M15 24c2 1.5 6 1.5 8 0"/></svg>`,
+  dmn:`<svg viewBox="0 0 40 40" fill="none" stroke="#1a1530" stroke-width="2.2" stroke-linecap="round"><circle cx="20" cy="20" r="13" fill="#c77dd6" stroke="#1a1530"/><circle cx="20" cy="20" r="2.4" fill="#1a1530"/><circle cx="11" cy="13" r="1.8" fill="#fff" stroke="#1a1530"/><circle cx="29" cy="13" r="1.8" fill="#fff" stroke="#1a1530"/><circle cx="11" cy="27" r="1.8" fill="#fff" stroke="#1a1530"/><circle cx="29" cy="27" r="1.8" fill="#fff" stroke="#1a1530"/><path d="M20 20l-9-7M20 20l9-7M20 20l-9 7M20 20l9 7" stroke-width="1.5"/></svg>`,
+  acc:`<svg viewBox="0 0 40 40" fill="none" stroke="#1a1530" stroke-width="2.4" stroke-linecap="round"><rect x="8" y="9" width="24" height="22" rx="3" fill="#e0a32e" stroke="#1a1530"/><path d="M13 17h14M13 22h14M13 27h9" stroke-width="2"/><path d="M24 14l2 2 4-4" stroke-width="2.6"/></svg>`,
+  ceo:`<svg viewBox="0 0 40 40" fill="none" stroke="#1a1530" stroke-width="2.4" stroke-linecap="round"><circle cx="20" cy="16" r="8" fill="#4767c4" stroke="#1a1530"/><circle cx="17" cy="15" r="1.5" fill="#fff"/><circle cx="23" cy="15" r="1.5" fill="#fff"/><path d="M16 19c2 1.5 6 1.5 8 0" stroke="#fff"/><path d="M8 34c1-6 5-9 12-9s11 3 12 9" fill="#4767c4" stroke="#1a1530"/><path d="M20 25v9" stroke-width="1.6"/></svg>`,
+  chacha:`<svg viewBox="0 0 40 40" fill="none" stroke="#1a1530" stroke-width="2.2" stroke-linecap="round"><path d="M8 12h24v15H22l-5 5v-5H8z" fill="#e6e3ee" stroke="#1a1530"/><circle cx="16" cy="19" r="1.6" fill="#1a1530"/><circle cx="24" cy="19" r="1.6" fill="#1a1530"/><circle cx="20" cy="19" r="1.6" fill="#1a1530"/></svg>`,
+  shan:`<svg viewBox="0 0 40 40" fill="none" stroke="#1a1530" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21c-2 1-3 4-2.5 7.5M31 21c2 1 3 4 2.5 7.5" fill="#d36b8a"/><circle cx="7.5" cy="29.5" r="2.4" fill="#d36b8a" stroke="#1a1530"/><circle cx="32.5" cy="29.5" r="2.4" fill="#d36b8a" stroke="#1a1530"/><path d="M11 17c0-6 4-9 9-9s9 3 9 9v8c0 1.2-1 2.2-2.2 2.2H13.2C12 27.2 11 26.2 11 25z" fill="#fbe0ea" stroke="#1a1530"/><path d="M11 18c0-6 4-10 9-10s9 4 9 10c-1.5-1.6-3-2.6-4.2-2.6-3 2-6.6 2-9.6 0C13.9 15.4 12.5 16.4 11 18z" fill="#d36b8a" stroke="#1a1530"/><path d="M20 8.2c.8-1 2.2-1.4 3.2-.6" stroke="#1a1530" stroke-width="1.8"/><circle cx="16.6" cy="20.4" r="1.5" fill="#1a1530"/><circle cx="23.4" cy="20.4" r="1.5" fill="#1a1530"/><path d="M17.2 24c1.5 1.3 4.1 1.3 5.6 0" stroke="#1a1530"/></svg>`
+};
+
+/* ---------- Cast ----------
+   Company model: YOU are the Chairman (the subject everyone reports on).
+   The DLPFC is the Executive Officer who runs the floor and reports up. */
+const CAST = [
+  {id:'shan', role:{en:'Chairman',         zh:'董事长'},   org:{en:'Metacognition · shanshan',zh:'元认知 · shanshan'}},
+  {id:'ceo',  role:{en:'Executive Officer',zh:'执行官'}, org:{en:'DLPFC',      zh:'背外侧前额叶'}},
+  {id:'hippo',role:{en:'Head of Memory', zh:'记忆总监'}, org:{en:'Hippocampus',zh:'海马体'}},
+  {id:'dmn',  role:{en:'Head of Ideas',  zh:'点子总监'}, org:{en:'DMN',        zh:'默认模式网络'}},
+  {id:'amyg', role:{en:'Risk Officer',   zh:'风控官'},   org:{en:'Amygdala',   zh:'杏仁核'}},
+  {id:'acc',  role:{en:'Auditor',        zh:'审计部'},   org:{en:'ACC',        zh:'前扣带皮层'}},
+];
+const NAME={ceo:{en:'Executive Officer · DLPFC',zh:'执行官 · 背外侧前额叶'},hippo:{en:'Hippocampus',zh:'海马体'},dmn:{en:'DMN',zh:'默认模式网络'},amyg:{en:'Amygdala',zh:'杏仁核'},acc:{en:'ACC',zh:'前扣带皮层'},shan:{en:'Chairman · Metacognition',zh:'董事长 · 元认知'}};
+const ORG={ceo:{en:'Runs the floor, reports to the Chairman',zh:'统筹全场，向董事长汇报'},hippo:{en:'Indexing & recall',zh:'检索与联想'},dmn:{en:'Storytelling engine',zh:'叙事生成器'},amyg:{en:'Alarm system',zh:'警报系统'},acc:{en:'Error detection',zh:'误差检测'},shan:{en:'Watches, names, decides',zh:'观察、命名、做决定'}};
+
+/* ---------- ACT 1 : Meet the Board ----------
+   The Chairman (you) asked: who is each of these, and what do they do?
+   Each department introduces itself; Chacha, the board observer, explains plainly. */
+const ACT1 = [
+  {speaker:'ceo',
+   en:`Welcome to <em>Brain Inc.</em>, Chairman. Five departments, one head — all of us working for you. You asked who's who, so let's do a quick roll call.`,
+   zh:`董事长，欢迎来到 <em>Brain Inc.</em>。五个部门，一颗脑袋——我们都为你工作。你问了大家都是谁，那就先点个名。`,
+   chacha:{en:`As a reminder of the setup: the Chairman is the subject everyone here reports on. The Executive Officer runs the floor and reports up. I'm the board observer — I'll translate what the departments are actually doing.`,
+           zh:`先说清这套设定：董事长是大家关注、汇报的主体；执行官负责统筹全场、向上汇报；我是董事会观察员，负责把各部门到底在干嘛翻译给你听。`}},
+
+  {speaker:'ceo',
+   en:`I'm the <em>Executive Officer</em>. Real name: the <em>dorsolateral prefrontal cortex (DLPFC)</em>. I hold the plan, set priorities, keep us on task, and say "not now" to good ideas at bad times.`,
+   zh:`我是<em>执行官</em>，真名叫<em>背外侧前额叶（DLPFC）</em>。我负责拿主意、定优先级、盯着任务，并在错误的时间对好点子说一句"现在不行"。`,
+   chacha:{en:`The DLPFC is executive control — working memory, planning, focus, impulse-holding. When the Chairman "sits down and finishes the task," this is the department doing it. Note: it reports to you, it isn't you.`,
+           zh:`DLPFC 是执行控制中枢——工作记忆、计划、专注、压住冲动。当董事长"沉下心把事情做完"，就是这个部门在干活。注意：它向你汇报，但它不是你。`}},
+
+  {speaker:'hippo',
+   en:`<em>Head of Memory</em> here — the <em>hippocampus</em>. Ask me anything, I pull the file: "how many wins do we have? what got rejected last year?" I index, and I <em>link</em> things across departments.`,
+   zh:`我是<em>记忆总监</em>——<em>海马体</em>。问我任何事我都能调档案："我们有几个成果？去年被拒过啥？"我负责检索，还负责跨部门<em>联想</em>。`,
+   chacha:{en:`The hippocampus is the indexer: it stores and retrieves memory, and its superpower is linking far-apart things almost instantly. The Chairman's version is unusually good at cross-level association.`,
+           zh:`海马体是索引器：存记忆、取记忆，超能力是把相隔很远的东西瞬间连起来。董事长这一版，特别擅长跨层级联想。`}},
+
+  {speaker:'dmn',
+   en:`<em>Head of Ideas</em> — the <em>Default Mode Network (DMN)</em>. When no task is locked in, I take the floor and tell stories: "the rival has lots of wins → we have few → the future looks risky…"`,
+   zh:`<em>点子总监</em>——<em>默认模式网络（DMN）</em>。一旦没有任务被锁定，我就上台讲故事："假想敌成果很多 → 我们成果少 → 未来很危险……"`,
+   chacha:{en:`The DMN runs when the mind wanders — daydreaming, self-reflection, imagining the future. Brilliant at invention, but it loves turning one small fact into a big narrative. That's where "we're just not good enough" gets written.`,
+           zh:`DMN 在走神时启动——发呆、自我反思、想象未来。发明能力很强，但特别爱把一个小事实编成一个大叙事。"我们就是不够好"这种故事，常常就是在这里被写出来的。`}},
+
+  {speaker:'amyg',
+   en:`<em>Risk Officer</em> — the <em>amygdala</em>. I flag things fast: <em>Important! Career-related! Pay attention!</em> I don't decide the Chairman is bad — I just sound the alarm.`,
+   zh:`<em>风控官</em>——<em>杏仁核</em>。我反应很快，专门贴标签：<em>重要！和职业有关！注意！</em>我不会判定董事长很差——我只负责拉警报。`,
+   chacha:{en:`The amygdala is the salience-and-threat detector. See a rival's record, it shouts "this matters." It tags urgency and emotion — it raises the volume, but it never writes the conclusion.`,
+           zh:`杏仁核是显著性与威胁探测器。看到假想敌的成绩单，它会喊"这事重要"。它给事情贴上紧急和情绪的标签——只调大音量，从不写结论。`}},
+
+  {speaker:'acc',
+   en:`<em>Auditor</em> — the <em>anterior cingulate cortex (ACC)</em>. One cold calculation: <em>goal vs reality = the gap</em>. Target 95, current 70, error 25. That's all I report. <span class="tag">Δ = 25</span>`,
+   zh:`<em>审计部</em>——<em>前扣带皮层（ACC）</em>。只做一个冷静的计算：<em>目标 vs 现实 = 差距</em>。目标 95，当前 70，误差 25。我只报这个。<span class="tag">Δ = 25</span>`,
+   chacha:{en:`The ACC is the error detector: it measures the distance between where you are and where you want to be. Crucial — it only outputs "there is a gap." It never outputs "you're bad." The DMN adds that part.`,
+           zh:`ACC 是误差检测器：测量"你在哪"和"你想到哪"之间的距离。关键是——它只输出"存在差距"，从不输出"你很差"。后半句是 DMN 加上去的。`}},
+
+  {speaker:'ceo',
+   en:`So when the Chairman saw a rival's record and felt like a "failure," here's the actual assembly line — and notice no one on it ever said you were bad.`,
+   zh:`所以当董事长看到假想敌的成绩单、觉得自己是个"失败者"时，真正的流水线是这样的——注意，这条线上没有任何一个人说过你很差。`,
+   chacha:{en:`The pipeline: Amygdala tags it important → Hippocampus pulls the records → ACC computes the gap (Δ=25) → DMN explains the gap → out comes a sentence. "There's a gap with the rival" is true. "I'm bad" is a story the DMN added on top. Hold onto that split — Act 3 is entirely about it.`,
+           zh:`流水线是：杏仁核标记"重要" → 海马体调出记录 → ACC 算出差距（Δ=25）→ DMN 解释差距 → 最后吐出一句话。"我和假想敌有差距"是真的，"我很差"是 DMN 额外加上去的故事。记住这个区分——第三幕讲的全是它。`}},
+
+  {speaker:'dmn',
+   en:`One more thing the Chairman caught herself: emotions aren't <em>nodes</em> or <em>commands</em> — they're <em>vectors</em>. Risk↑, importance↑, uncertainty↑, reward↓ → "anxiety." A compressed broadcast of the whole system's state.`,
+   zh:`还有一个董事长自己抓到的点：情绪不是<em>节点</em>，也不是<em>指令</em>——它是<em>矢量</em>。风险↑、重要性↑、不确定性↑、奖励↓ →"焦虑"。是整个系统状态被压缩后的一次广播。`,
+   chacha:{en:`A sharp insight, and the Chairman's own. The move was to stop at "I feel anxious" less, and start asking "what is this vector encoding — what does the system actually need?" That's emotion-decoding.`,
+           zh:`一个很犀利的洞察，而且是董事长自己的。关键动作是：越来越少停在"我好焦虑"，而是开始问"这个矢量在编码什么——系统到底需要什么？"这就是情绪解码。`}},
+
+  {speaker:'ceo',
+   en:`Roll call done, Chairman. Now watch us actually try to run the company under pressure. Act 2 next. 😄`,
+   zh:`点名完毕，董事长。接下来看看我们在压力下到底怎么运转公司。下面是第二幕。😄`,
+   chacha:{en:`You've met everyone. The next two acts show the same team in action: Act 2 is why an easy task doesn't get done; Act 3 is how "a small bad event" becomes "something is wrong with me." Both are the same departments, just under load.`,
+           zh:`你认识所有人了。接下来两幕看这支团队怎么运转：第二幕讲为什么一件不难的事就是做不动；第三幕讲"一件小坏事"如何变成"我这个人有问题"。都是同一批部门，只是在负载之下。`}},
+];
+
+/* ---------- ACT 2 : Why the Boring Task Doesn't Get Done ----------
+   Theme: low-interest procrastination. The important-but-unexciting task keeps
+   losing the floor to more interesting ideas. Lesson at the end: procrastination
+   is a low-reward / high-friction problem, not a willpower / character problem. */
+const ACT2 = [
+  {speaker:'ceo',
+   en:`Chairman, today there's <em>one</em> task that matters: the dull, important one we've put off three days running. Let's just start it.`,
+   zh:`董事长，今天只有<em>一件</em>要紧事：那件又无聊又重要、已经连拖三天的活儿。我们就开个头吧。`,
+   chacha:{en:`Notice the setup: the task isn't hard and the Chairman knows exactly what to do. This isn't a skill problem. Watch what the task is actually competing against.`,
+           zh:`注意这个设定：任务不难，董事长也清楚该怎么做。这不是能力问题。看看这件任务真正要跟什么竞争。`}},
+
+  {speaker:'dmn',
+   en:`(climbing in through the window) Wait wait — before that, I just had a <em>way</em> more interesting idea. What if we restructured the whole project instead?!`,
+   zh:`（从窗户翻进来）等等等等——开始之前，我刚想到一个<em>有意思得多</em>的点子。要不我们干脆把整个项目重构了？！`,
+   chacha:{en:`There it is. The DMN offers a high-novelty alternative. Novelty feels like reward; the boring task offers none yet. The Chairman didn't choose to drift — the reward math did.`,
+           zh:`来了。DMN 抛出一个高新鲜度的替代项。新鲜感像奖励，而那件无聊任务暂时一点奖励都不给。董事长不是主动跑偏——是奖励的账算出来的。`}},
+
+  {speaker:'hippo',
+   en:`Ooh, and that connects to three other things we shelved! Let me pull them all up — this could be a whole new direction!`,
+   zh:`噢，而且这能连上我们之前搁置的另外三件事！我都调出来——这说不定是个全新方向！`,
+   chacha:{en:`The hippocampus happily feeds the detour. Every interesting tangent gets richly cross-linked; the dull task stays a single grey line nobody wants to open.`,
+           zh:`海马体高高兴兴地给岔路添柴。每条有趣的支线都被丰富地交叉链接，而那件无聊任务始终是一条没人想点开的灰色线段。`}},
+
+  {speaker:'acc',
+   en:`(quietly raising a hand) Reminder. The boring task is still at zero. <span class="tag">Δ = unchanged</span>`,
+   zh:`（默默举手）提醒一下。无聊任务进度仍然是零。<span class="tag">Δ = 没动</span>`,
+   chacha:{en:`The Auditor flags the gap accurately — and gets ignored, because a flagged gap with no reward attached doesn't move anyone. Information isn't motivation.`,
+           zh:`审计部准确地标出了差距——然后被无视，因为一个不带奖励的差距提示，谁也推不动。信息不等于动力。`}},
+
+  {speaker:'amyg',
+   en:`(charging in) Also — what if we start and it's HARD? What if it's bad? Maybe… let's not look at it yet.`,
+   zh:`（冲进来）还有——万一开了头发现很难呢？万一做出来很烂呢？要不……我们先别看它。`,
+   chacha:{en:`Here's the hidden engine of procrastination: the amygdala tags the task with a small dread. Avoiding it gives instant relief — and that relief is a reward. So avoidance gets reinforced every single time.`,
+           zh:`这才是拖延的隐藏引擎：杏仁核给任务贴上一点点"怕"。回避它能立刻带来轻松——而这份轻松本身就是奖励。于是每回避一次，回避就被强化一次。`}},
+
+  {speaker:'dmn',
+   en:`So obviously the smart move is to research the restructure first, make a beautiful plan, maybe a diagram, definitely a diagram —`,
+   zh:`所以聪明的做法当然是先研究那个重构，做个漂亮的计划，也许配张图，必须配张图——`,
+   chacha:{en:`Watch the trick: "productive procrastination." The detour is dressed as work, so it doesn't feel like avoidance. But the one task that mattered is still at zero.`,
+           zh:`看这个把戏："看起来很努力的拖延"。岔路被包装成工作，于是不像在逃避。但那件唯一要紧的任务，还是零。`}},
+
+  {speaker:'acc', en:`{stamp}`, zh:`{stamp}`,
+   chacha:{en:`The Auditor has stopped using words.`, zh:`审计部已经懒得说话了。`}},
+
+  {speaker:'ceo',
+   en:`(rubbing temples) Everyone. I hear you. These are all genuinely good ideas.`,
+   zh:`（揉太阳穴）各位。我听到了。这些确实都是好点子。`,
+   chacha:{en:`The Executive Officer isn't angry — and isn't lazy. It's outnumbered. One unrewarding task versus five departments all pulling toward something shinier.`,
+           zh:`执行官没有生气——也不是懒。它只是寡不敌众。一件不给奖励的任务，对上五个都在往更闪亮的东西使劲的部门。`}},
+
+  {speaker:'ceo',
+   en:`But here's the real diagnosis, Chairman — the problem was never "we're lazy." Laziness isn't a thing. This is a <em>reward-and-friction</em> problem.`,
+   zh:`但真正的诊断是这样的，董事长——问题从来不是"我们懒"。世上没有"懒"这回事。这是一个<em>奖励与摩擦</em>的问题。`,
+   chacha:{en:`This is the reframe that matters. "I'm lazy / I have no willpower" is a character verdict — and a wrong one. The accurate read: the task is high-friction and low-reward, and avoidance pays out instantly. Different problem, with actual fixes.`,
+           zh:`这就是关键的重构。"我懒/我没毅力"是一句人格判决——而且判错了。准确的读数是：这件任务高摩擦、低奖励，而回避能立刻兑现轻松。是另一个问题，而且有真正的解法。`}},
+
+  {speaker:'ceo',
+   en:`So we don't fight the team — we change the math. Shrink step one until it's tiny (open the file, two minutes). Add a reward on completion. Park every shiny idea in writing for later. Lower the friction, and the task stops losing.`,
+   zh:`所以我们不跟团队硬扛——我们改算式。把第一步缩到极小（打开文件，两分钟）。完成后给个奖励。每个闪亮点子都写进"待办停车场"留着以后做。把摩擦降下去，这件任务就不再输了。`,
+   chacha:{en:`Shrink the first step, attach a reward, park the distractions. You're not defeating the DMN — you're handing the boring task enough reward and low enough friction to finally win a round. That's the whole mechanism.`,
+           zh:`缩小第一步、绑定奖励、停放干扰项。你不是要打败 DMN——你是给那件无聊任务足够的奖励、足够低的摩擦，让它终于能赢下一回合。整个机制就是这样。`}},
+
+  {speaker:'ceo',
+   en:`The exciting ideas really are good. They're just parked, not deleted. Two minutes on the boring task — starting now. 😄`,
+   zh:`那些让人兴奋的点子确实很好。它们只是被停放了，不是被删掉。无聊任务先做两分钟——现在就开始。😄`,
+   chacha:{en:`The takeaway from Act 2: procrastination on a dull-but-important task isn't a flaw in you. It's predictable reward math — and once you can see the math, you can change it. Same lesson shape as Act 3, different bug.`,
+           zh:`第二幕的收获：对一件"无聊却重要"的任务拖延，不是你身上的缺陷。那是一笔可预测的奖励账——一旦你能看见这笔账，你就能改写它。这和第三幕是同一种课，只是不同的 bug。`}},
+];
+
+/* ---------- ACT 3 : How "a Small Bad Event" Becomes "I'm Bad" ----------
+   Theme: misattribution (错误归因). Pulled from a real late-night chat. Each scene
+   opens with one of the Chairman's actual lines; the five regions show what each was
+   thinking right then. Lesson: misattribution = a true event + a false cause the DMN
+   pinned on the self. */
+const ACT3 = [
+  // -- Scene A : the cat threw up --
+  {speaker:'amyg',
+   shanline:{en:`"I was in flow studying… then my cat threw up twice this morning."`,
+             zh:`"我本来在心流里学习……结果我的猫今天早上吐了两次。"`},
+   en:`THREAT DETECTED. Living creature. Something's wrong. <em>Important! Pay attention NOW!</em>`,
+   zh:`检测到威胁。活的生命。出问题了。<em>重要！立刻注意！</em>`,
+   chacha:{en:`A cat throwing up is a small, true event. The amygdala doesn't judge it yet — it just spikes salience: "this matters, look here." Volume up, no conclusion attached. Misattribution always starts from a real event like this one.`,
+           zh:`猫吐是一件真实的小事。杏仁核还没下判断——只是把显著性拉满："这事重要，快看。"音量调大，但还没有任何结论。错误归因，总是从这样一件真实的小事开始的。`}},
+
+  {speaker:'hippo',
+   en:`Pulling the file… "she threw up before too… I've been so tired… I haven't been around much…"`,
+   zh:`调取档案中……"她以前也吐过……我最近好累……我陪她的时间不多……"`,
+   chacha:{en:`The hippocampus retrieves related memories on demand. Tired? Busy? Past incidents? It hands all of it up the chain — accurately, but without weighing whether it's relevant.`,
+           zh:`海马体按需调出相关记忆。累？忙？以前的事？它把这些一股脑往上递——很准确，但不负责判断这些是否真的相关。`}},
+
+  {speaker:'dmn',
+   en:`Story time. Cat sick → I can't even care for her → maybe I can't care for any life → maybe I'd be a bad parent → maybe I've lost my humanity → maybe all I have left is research.`,
+   zh:`故事时间。猫病了 → 我连她都照顾不好 → 也许我照顾不好任何生命 → 也许我也当不好父母 → 也许我失去了人性 → 也许我只剩下工作了。`,
+   chacha:{en:`Here it is — the DMN's signature move, and the engine of misattribution. It takes one true fact and builds a six-step staircase down to "something is wrong with me." Every step feels logical. None was given by the data — the cause got pinned on the self.`,
+           zh:`来了——这就是 DMN 的招牌动作，也是错误归因的引擎。它拿一个真实的事实，搭出一条六级台阶，一路通往"我这个人有问题"。每一步都显得合乎逻辑，但没有一步是数据给的——原因被硬扣到了"自己"头上。`}},
+
+  {speaker:'acc',
+   en:`Cold reading: goal = "be someone who cares for life well." Current = "cat is sick." Gap detected. <span class="tag">Δ = mismatch</span>`,
+   zh:`冷静读数：目标 = "做一个能照顾好生命的人"。当前 = "猫病了"。检测到差距。<span class="tag">Δ = 不匹配</span>`,
+   chacha:{en:`The ACC only reports a distance between goal and reality. That's its entire job. It never says "and therefore you're bad" — the DMN borrowed its number and wrote that part.`,
+           zh:`ACC 只报告目标与现实之间的距离。这就是它的全部工作。它从不说"所以你很差"——是 DMN 借走了它的数字，自己加上了后半句。`}},
+
+  {speaker:'ceo',
+   en:`(quietly) Team… a cat threw up. That is the size of the event. Let's not approve a documentary about my entire character over it.`,
+   zh:`（小声）各位……猫吐了。事件的大小就这么大。别因为这个就批准一部关于我整个人格的纪录片。`,
+   chacha:{en:`The CEO (DLPFC) is the one part that can pause the staircase. When it's rested, it says "right-size the event." When it's depleted — three deadlines deep — it's too tired to interrupt, and the story runs unchecked.`,
+           zh:`CEO（DLPFC）是唯一能叫停那条台阶的部门。它有精力时会说"把事件还原成它本来的大小"。但当它被掏空——压着三个截止日期——它就累到没法打断，于是故事一路狂奔，无人喊停。`}},
+
+  // -- Scene B : crying, the cat comes over --
+  {speaker:'amyg',
+   shanline:{en:`"I cried again. While I cried, my cat rubbed against the back of my hair."`,
+             zh:`"我又哭了。我哭的时候，小猫在我的头发后面蹭来蹭去。"`},
+   en:`Distress signal active. Tears. System overload. Broadcasting: <em>not okay, not okay.</em>`,
+   zh:`痛苦信号激活。眼泪。系统过载。广播中：<em>状态不对，状态不对。</em>`,
+   chacha:{en:`Crying isn't a verdict — it's an overflow. When the emotional buffer runs shallow, pressure doesn't get processed, it spills. The amygdala is just broadcasting the overload.`,
+           zh:`哭不是判决——是溢出。当情绪缓冲池变浅，压力来不及被消化，就直接漫出来。杏仁核只是在广播这次过载。`}},
+
+  {speaker:'hippo',
+   en:`Indexing the moment: "she didn't run away. She came closer. She's rubbing against me." Filing under… unsure where.`,
+   zh:`正在索引此刻："她没有躲开。她凑得更近。她在蹭我。"归档到……不确定放哪。`,
+   chacha:{en:`The hippocampus captured the real data: the cat approached a crying person instead of fleeing. That's a fact about being responded to. Whether it gets believed depends on who reads it next.`,
+           zh:`海马体捕捉到了真实数据：猫面对一个哭泣的人，选择靠近而不是逃走。这是一条"我被回应了"的事实。但它会不会被相信，取决于下一个读取它的是谁。`}},
+
+  {speaker:'dmn',
+   en:`Reframing: she's "forced to feel my anxiety" → I'm hurting her → I should find her a better owner → see, I ruin what I love.`,
+   zh:`重新解读：她"被迫感受我的焦虑" → 我在伤害她 → 我该给她找个更好的主人 → 你看，我会毁掉我爱的东西。`,
+   chacha:{en:`The DMN took a tender fact — a cat comforting you — and rewrote it into evidence against you. Same input as the hippocampus, opposite conclusion. This is the move worth catching in the act.`,
+           zh:`DMN 把一个温柔的事实——猫在安慰你——改写成了对你不利的证据。和海马体输入的是同一条数据，结论却相反。这正是值得当场抓住的那个动作。`}},
+
+  {speaker:'acc',
+   en:`Detecting a contradiction: "she came to comfort me" vs "I'm a bad owner." Both can't score high. Flagging conflict.`,
+   zh:`检测到矛盾："她来安慰我" vs "我是个坏主人"。两者不可能同时成立。标记冲突。`,
+   chacha:{en:`Quietly, the ACC notices the two stories don't add up. That flicker of "wait, these contradict" is the opening — it's where metacognition can step in and ask which story the evidence actually supports.`,
+           zh:`ACC 悄悄发现这两个故事对不上账。那一闪而过的"等等，这俩矛盾"就是缺口——元认知正是从这里介入，去问：证据到底支持哪个故事？`}},
+
+  {speaker:'ceo',
+   en:`Logging it: "caring for a life isn't never letting them get sick. It's noticing when they do." You noticed. You even cried. That's not a cold person.`,
+   zh:`记录在案："照顾生命不是永远不让它生病，而是它生病时你会注意到。"你注意到了，你甚至为此哭了。这不是一个冷漠的人。`,
+   chacha:{en:`This is the CEO doing real executive work: not silencing the feeling, but re-reading the evidence correctly. The relief in the original chat came exactly here — the reframe from "I'm bad" to "I'm overloaded and I still cared."`,
+           zh:`这才是 CEO 在做真正的执行工作：不是压住情绪，而是把证据重新读对。你那晚真正松一口气，就发生在这里——从"我很差"重写成"我只是过载了，但我依然在乎"。`}},
+
+  // -- Scene C : crying at everything --
+  {speaker:'amyg',
+   shanline:{en:`"Lately I cry so easily — at an accept, at a rejection, at waiting on funding, at the cat."`,
+             zh:`"我最近好容易哭——拿到 accept 哭，被拒哭，等拨款焦虑哭，猫吐也哭。"`},
+   en:`Everything is tagged HIGH right now. Good news? HIGH. Bad news? HIGH. Uncertainty? HIGH.`,
+   zh:`现在什么都被标成"高强度"。好消息？高。坏消息？高。不确定？高。`,
+   chacha:{en:`When good and bad events produce the same response — tears — it's a tell: the buffer is nearly empty. The amygdala isn't malfunctioning; the system just has no slack left to absorb anything.`,
+           zh:`当好事和坏事产生同一种反应——眼泪——这是个信号：缓冲池快空了。杏仁核没坏；只是整个系统已经没有余量去吸收任何东西了。`}},
+
+  {speaker:'hippo',
+   en:`Recall: "accept → straight into registration, fees, admin. Reward never actually landed." Pattern logged.`,
+   zh:`检索："accept → 紧接着是注册、缴费、各种杂务。奖励其实从没真正到账。"模式已记录。`,
+   chacha:{en:`The hippocampus spots the real pattern: every win got swallowed by the next chore before it could be felt. That's not weakness — that's an accurate read of a depleted reward system.`,
+           zh:`海马体看出了真正的模式：每一次胜利还没来得及被感受，就被下一件杂务吞掉了。这不是脆弱——这是对一个被透支的奖励系统的准确读数。`}},
+
+  {speaker:'dmn',
+   en:`Conclusion incoming: "I haven't taken care of myself → I'm failing at the basics → expecting reward just sets me up for disappointment."`,
+   zh:`结论将至："我没把自己照顾好 → 我连基本的都做不好 → 期待奖励只会让我更失望。"`,
+   chacha:{en:`The DMN turns "I'm exhausted" into "I'm failing." But exhaustion is a fuel reading, not a character verdict. The whole skill you've been building is to keep these two apart.`,
+           zh:`DMN 把"我精疲力竭"翻译成"我很失败"。但精疲力竭是油量读数，不是人格判决。你一直在练的那个能力，就是把这两件事分开。`}},
+
+  {speaker:'acc',
+   en:`Recomputing: the gap isn't "effort too low." Effort is high. The gap is "reward expected − reward received." Different equation entirely.`,
+   zh:`重新计算：差距不是"努力太少"。努力很高。差距是"期待的奖励 − 实际收到的奖励"。完全是另一个方程。`,
+   chacha:{en:`Crucial correction. The ACC, read properly, shows the deficit isn't in your effort — it's in the reward that never arrived. "Papers are few" ≠ "I didn't try." Different variables.`,
+           zh:`关键修正。ACC 被正确解读后会显示：亏空不在你的努力，而在那份从未到账的奖励。"论文少" ≠ "我没努力"。是不同的变量。`}},
+
+  {speaker:'ceo',
+   en:`Decision: stop debugging my character. Start debugging the system. The bug isn't "I'm bad" — it's "buffer depleted, reward delayed." Those have fixes.`,
+   zh:`决策：别再调试我的人格了，开始调试这个系统。Bug 不是"我很差"——是"缓冲池耗尽、奖励延迟"。这些是有解的。`,
+   chacha:{en:`This is the turn the whole night was building toward. The same facts, re-sorted: papers few ≠ lazy, cat sick ≠ bad owner, future unclear ≠ future bad. You didn't solve the problems — you renamed them correctly. That alone changed who was speaking.`,
+           zh:`这是整晚一直在铺垫的转折。同样的事实，重新归类：论文少 ≠ 懒，猫病了 ≠ 坏主人，未来不明 ≠ 未来一定糟。你没有解决问题——你把它们重新命名对了。仅这一点，就改变了说话的主体。`}},
+
+  // -- closing --
+  {speaker:'ceo',
+   shanline:{en:`"We spent half an hour crying and took my emotions apart."`,
+             zh:`"我们花了半个小时哭了一场，解构了一下我的情绪。"`},
+   en:`Status update: 100 tangled problems → Problem A, Problem B, Problem C. System restabilised. The person at the desk now knows what she's actually working for. — <em>End of Act 3.</em>`,
+   zh:`状态更新：100 个纠缠的问题 → 问题 A、问题 B、问题 C。系统重新稳定。坐在桌前的那个人，现在知道自己到底在为什么努力了。——<em>第三幕 完。</em>`,
+   chacha:{en:`The takeaway from Act 3: misattribution is a real event plus a false cause the DMN pins on you. "Cat sick" was true; "I'm a bad owner" was the misattribution. Papers few ≠ lazy, cat sick ≠ bad owner, future unclear ≠ future bad. The Chairman didn't solve the problems — she renamed the causes correctly, and that alone changed who was speaking: from doubting herself to understanding herself. From anxiety to narrative. (Same lesson shape as Act 2 — separate the true event from the false cause.)`,
+           zh:`第三幕的收获：错误归因 = 一个真实事件 + DMN 扣到你头上的一个错误原因。"猫病了"是真的，"我是个坏主人"是错误归因。论文少 ≠ 懒，猫病了 ≠ 坏主人，未来不明 ≠ 未来一定糟。董事长没有解决问题——她把原因重新命名对了，仅这一点就改变了说话的主体：从怀疑自己，变成理解自己。From anxiety to narrative。（和第二幕是同一种课——把真实事件和错误原因分开。）`}},
+];
+
+/* ---------- ACT 4 : Who Ordered the Carbs? ----------
+   Theme: a craving as a multi-department lobbying campaign. The brain only ever
+   runs on glycogen — but every Agent quietly wants the Chairman to eat a big bowl
+   of carbs and pass out, because then everyone gets a short break. So each one
+   exaggerates the "need for sugar." The Chairman wakes from a carb-coma and
+   interrogates the brain until the whole scheme prints out.
+   Lesson: a good Chairman reads the real state and demand behind the request. */
+const ACT4 = [
+  {speaker:'ceo',
+   shanline:{en:`"I just ate a huge bowl of noodles, passed out, and woke up groggy. …Wait. Who exactly ordered the carbs?"`,
+             zh:`"我刚吃了一大碗面，晕过去，醒来昏昏沉沉的。……等等。到底是谁点的碳水？"`},
+   en:`Roll call. Carb-coma confirmed. Chairman is now awake and asking questions. Everyone look natural.`,
+   zh:`点名。碳水昏迷确认。董事长现在醒了，开始问话。各位，自然点。`,
+   chacha:{en:`A craving feels like one simple urge — "I want carbs." But the Chairman just did something rare: instead of obeying it, she's interrogating it. Watch each department's actual motive surface.`,
+           zh:`渴望感觉像一个简单的冲动——"我想吃碳水"。但董事长刚做了件难得的事：不是服从它，而是审问它。看看每个部门真正的动机怎么浮出来。`}},
+
+  {speaker:'ceo',
+   en:`Let the record show what we actually run on: <em>glycogen</em>. That's it. We don't taste noodles — we just need a steady trickle of fuel. So why the lobbying for a giant bowl?`,
+   zh:`先把事实记录在案：我们真正消耗的是<em>糖原</em>。就这个。我们尝不到面条的味道——我们只需要一点点稳定的燃料供给。那为什么大家要游说点一大碗？`,
+   chacha:{en:`Key fact, and it's true: the brain runs on glucose/glycogen, not on "noodles." A modest steady supply is enough. Everything after this is the departments wanting <em>more</em> than that — and each has a reason.`,
+           zh:`关键事实，而且是真的：大脑靠葡萄糖/糖原供能，不靠"面条"。少量稳定供给就够了。接下来发生的一切，都是各部门想要<em>超出</em>这个量——而且每个都有自己的理由。`}},
+
+  {speaker:'amyg',
+   en:`(raising hand sheepishly) …Okay, it was sort of my idea. Everyone's been redlined for weeks. I figured: big carbs → Chairman crashes → forced nap → and, well… I get to clock off too.`,
+   zh:`（不好意思地举手）……好吧，差不多是我起的头。大家连着好几周都在超负荷。我寻思：大份碳水 → 董事长断电 → 被迫小睡 → 然后嘛……我也能跟着下班。`,
+   chacha:{en:`The Risk Officer outs itself as the instigator — but notice the motive. It's not malice; the amygdala has been flat-out on alarm duty for weeks and is exhausted. The craving is partly a tired guard begging for the lights to go out.`,
+           zh:`风控官自首是发起人——但注意它的动机。不是使坏；杏仁核连着几周满负荷拉警报，已经累垮了。这份渴望，有一部分是一个疲惫的门卫在求"把灯关掉吧"。`}},
+
+  {speaker:'hippo',
+   en:`(eagerly) I helped! Chairman asked "do we even want this?" so I pulled receipts — that birthday cake, hot bread at midnight, the noodles after the deadline. Look how HAPPY we were!`,
+   zh:`（兴奋地）我帮忙了！董事长问"我们到底想不想吃这个？"我就把证据都翻出来了——那次生日蛋糕、半夜的热面包、deadline 之后那碗面。看我们当时多<em>快乐</em>！`,
+   chacha:{en:`The hippocampus instantly surfaces a highlight reel of delicious, happy moments — fast and vivid. It's accurate that those memories exist, but it's quietly cherry-picking: every retrieval is a happy one. No one filed "and then we felt sluggish for two hours."`,
+           zh:`海马体瞬间掉出一卷"美食快乐瞬间"的高光集锦——又快又生动。这些记忆确实存在，但它在悄悄挑拣：每一条调出来的都是快乐的。没人归档"然后我们昏沉了两个小时"那一条。`}},
+
+  {speaker:'dmn',
+   en:`(spinning a tale) And I wove the story that <em>sells</em> it: "You worked SO hard. You've earned this. One big bowl and everything feels okay. This is self-care, actually." Beautiful, right?`,
+   zh:`（编织故事）而我负责把它<em>讲圆</em>：你这么努力，你值得这一顿。一大碗下去，一切都会好起来。这其实是在好好爱自己。很美吧？`,
+   chacha:{en:`The DMN is the exaggeration-generator. It takes a small fuel need and spins a whole narrative around it — reward, deservingness, comfort, identity. None of that is in the glucose. It's the story layer making "a snack" feel like "what you owe yourself."`,
+           zh:`DMN 是夸大叙事的生成器。它拿一个小小的能量需求，围着它编出一整套故事——奖励、配得感、慰藉、身份认同。这些葡萄糖里一点都没有。是这层故事，把"一口零食"讲成了"你欠自己的"。`}},
+
+  {speaker:'acc',
+   en:`(shuffling papers) In my comparison report of "normal meal vs. giant carbs," I, ah, weighted the <em>emotional payoff</em> column heavily… and rounded the <em>calorie gap</em> way down. Numbers technically present. Emphasis… creative.`,
+   zh:`（翻动文件）在我那份"普通餐 vs 大份碳水"的对比报告里，我，呃，把<em>情绪收益</em>那一栏的权重调得很高……然后把<em>热量差值</em>大幅四舍五入缩小了。数字技术上都在。侧重嘛……有点创意。`,
+   chacha:{en:`Even the Auditor is in on it. The ACC didn't lie outright — it skewed the weighting: it inflated the emotional-reward term and shrank the calorie difference. Same trick as a biased dashboard. When even your error-checker is tilting the report, the craving feels unanimous.`,
+           zh:`连审计部都参与了。ACC 没有直接撒谎——它扭曲了权重：把情绪奖励项放大，把热量差值缩小。和一个带偏见的仪表盘是同一个把戏。当连你的纠错部门都在给报告注水，这份渴望就显得"全员一致"了。`}},
+
+  {speaker:'ceo',
+   en:`(slowly) So… nobody's the villain. You're all a little greedy — and you're all a little exhausted. The carbs were never really about carbs.`,
+   zh:`（缓缓地）所以……没有谁是反派。你们都有点小贪心——你们也都有点累坏了。这碗碳水，从来就不是关于碳水。`,
+   chacha:{en:`The verdict the Chairman reaches isn't "bad department, punish it." It's the honest one: every Agent had a small self-interest, and underneath all of them is the same true signal — the whole system is overworked and asking for rest. The craving was that signal, wearing a costume.`,
+           zh:`董事长得出的结论不是"坏部门，惩罚它"。而是诚实的那个：每个 Agent 都有一点点私心，而它们底下是同一个真实信号——整个系统过劳了，在要求休息。这份渴望，就是那个信号，套了件戏服。`}},
+
+  {speaker:'ceo',
+   en:`Decision: I'll have <em>some</em> carbs — you've earned a treat — but the thing you're all actually asking for is rest. So we're scheduling real sleep tonight, not a sugar blackout. Request heard. Real demand met. 😄 — <em>End of Act 4.</em>`,
+   zh:`决策：我会吃<em>一点</em>碳水——你们确实值得犒劳——但你们真正要的是休息。所以今晚我们安排真正的睡眠，而不是靠糖分昏过去。请求收到。真实诉求满足。😄 ——<em>第四幕 完。</em>`,
+   chacha:{en:`The takeaway from Act 4: a Chairman's job is to read the real state and the real demand behind a department's request — not just approve or deny the surface ask. "I want carbs" decoded to "we're all exhausted and want a break." Granting the treat <em>and</em> scheduling rest answers the request honestly. That's leadership: caring about your staff's true condition, not just their loudest demand.`,
+           zh:`第四幕的收获：董事长的职责，是读懂一个部门请求背后真实的状态和真实的诉求——而不只是批准或否决表面那句话。"我想吃碳水"解码出来是"我们都累坏了，想歇口气"。既给了犒劳，<em>又</em>安排了休息，才是对这个请求的诚实回应。这就是领导力：关心下属真实的状态，而不只是他们喊得最响的那句要求。`}},
+];
+
+/* ---------- ACT 5 : The Chairman Wakes Up ----------
+   Theme: the rename. Through Acts 1–4 the Chairman kept saying "I" while pointing
+   at her departments. Here she catches herself doing it, and realises the seat
+   she's been sitting in has a name: metacognition. With the name comes the real
+   job — not silencing the star employee (DMN), but giving it a parking lot, legal
+   hours and a new reward function; and not running the Executive Officer (CEO/DLPFC)
+   into the ground. Closes the whole play: from doubting herself, to understanding
+   herself, to leading the company on purpose. */
+const ACT5 = [
+  {speaker:'ceo',
+   shanline:{en:`"The CEO's about to laugh out of frustration. The DMN still won't do its job — and it's me, the big boss, who keeps spoiling it."`,
+             zh:`"CEO 他快气笑了，DMN 还能继续不干活不听话——都是我这个大老板惯的。"`},
+   en:`(exhausted, tie loosened) Chairman… you said "me, the big boss." Good. Then may I ask the boss one question? <em>Which</em> of us did you just mean by "me"?`,
+   zh:`（精疲力竭，领带松着）董事长……你刚说"我这个大老板"。很好。那我能不能问老板一个问题：你说的那个"我"，到底是<em>我们里的哪一个</em>？`,
+   chacha:{en:`Catch this opening line. All night the Chairman has narrated her brain in the first person — "I can't focus," "I keep spoiling it." The CEO just gently pointed at the slip: if you're the boss who spoils the DMN, then you aren't the DMN, and you aren't the CEO either. So who's left in that chair?`,
+           zh:`留意开场这句。整晚董事长都用第一人称叙述自己的大脑——"我无法专注""都是我惯的"。CEO 只是温柔地指出了这个口误：如果你是那个"惯着 DMN"的老板，那你就不是 DMN，也不是 CEO。那么坐在那把椅子上的，到底是谁？`}},
+
+  {speaker:'dmn',
+   en:`(leaning in, delighted) Ooh, identity puzzle, my favourite — let me build a story! "I am the DMN, therefore I am the dreamer, therefore—" wait. No. The boss <em>watches</em> me dream. The boss is the one going "DMN, not now." That's… not me.`,
+   zh:`（凑过来，兴奋）噢，身份谜题，我最爱了——让我编个故事！"我是 DMN，所以我是那个做梦的人，所以——"等等。不对。那个老板是在<em>看着</em>我做梦。那个会说"DMN，现在先别"的，是老板。那……不是我。`,
+   chacha:{en:`Even the DMN can feel the gap. The part that <em>watches</em> the DMN spin stories cannot itself be the DMN — you can't be both the movie and the person watching it. The watcher has been here the whole play, narrating, and never once introduced itself.`,
+           zh:`连 DMN 自己都能感到那道缝。那个<em>看着</em> DMN 编故事的部分，不可能就是 DMN——你没法同时是那部电影、又是看电影的人。那个"观看者"整部戏都在场，一直在旁白，却从没做过自我介绍。`}},
+
+  {speaker:'acc',
+   en:`(sliding a single sheet across the table) I ran the audit. Across Acts 1 to 4, one entity gave every order: "right-size the event," "park the idea," "rename the cause." It was never the CEO. The CEO <em>executes</em>. This one <em>decides what's worth executing</em>. <span class="tag">unnamed · seat 0</span>`,
+   zh:`（推过来一张纸）我做了审计。第一到第四幕里，所有指令都由同一个主体下达："把事件还原大小""把点子停放""把原因重新命名"。那从来不是 CEO。CEO 负责<em>执行</em>。这一位负责<em>决定什么才值得执行</em>。<span class="tag">未命名 · 0 号席位</span>`,
+   chacha:{en:`The Auditor found the fingerprint. Look back: who decided the cat was "cat-sized" and not "proof I'm a monster"? Who chose to park the idea instead of chasing it? Not the CEO — the CEO carries out plans. The decider sat one level up, in a chair labelled "seat 0," with no name on the door. Until now.`,
+           zh:`审计部找到了指纹。回头看：是谁判定那只猫是"一只猫的大小"而不是"我是怪物的证据"？是谁选择把点子停放、而不是追着它跑？不是 CEO——CEO 是去落实方案的。那个"做决定的人"高一层，坐在标着"0 号席位"的椅子上，门上没写名字。直到现在。`}},
+
+  // -- the aha --
+  {speaker:'ceo',
+   en:`(standing, quietly) Chairman. The seat you've been sitting in all night — the one that watches us, names what's happening, and decides what matters — it already has a name in your own research. You've been training it for months. <em>It's metacognition.</em>`,
+   zh:`（起身，轻声）董事长。你整晚坐着的那把椅子——那个看着我们、命名正在发生的事、决定什么重要的位置——它在你自己的研究里早就有名字了。你练了它好几个月。<em>它叫元认知。</em>`,
+   chacha:{en:`Here's the rename the whole play was built toward. Not "I'm scattered, I'm a pig, I'm bad" — those were department reports the watcher mistook for its own identity. The watcher is metacognition: the capacity to observe your own mind and choose your relationship to it. The Chairman didn't gain a new power tonight. She finally learned the name of the one she's been using all along.`,
+           zh:`这就是整部戏一直铺垫的那次重命名。不是"我很散、我是猪、我很差"——那些只是部门报告，被观看者误当成了自己的身份。这个观看者就是元认知：观察自己心智、并选择如何与它相处的能力。董事长今晚没有获得新能力。她只是终于知道了那个她一直在用的能力，叫什么名字。`}},
+
+  {speaker:'dmn',
+   en:`(softly, for once) …Oh. So when she said "I keep spoiling the DMN" — she's not the DMN being spoiled. She's the one who <em>chose</em> to spoil it. Which means she could also choose… not to. Huh. That's a bigger plot twist than anything I've written.`,
+   zh:`（难得地，轻声）……噢。所以当她说"都是我惯着 DMN"——她不是那个被惯坏的 DMN。她是那个<em>选择</em>去惯的人。也就是说，她也可以选择……不惯。哈。这比我写过的任何反转都大。`,
+   chacha:{en:`The quiet click. "I spoil the DMN" sounds like a confession of weakness; it's actually proof of authority. Only someone <em>above</em> the DMN can spoil it. The same hand that has been saying "yes, yes, yes" to every idea is fully able to say "noted — later." The Chairman was never trapped. She just hadn't noticed the chair was hers.`,
+           zh:`安静的一声"咔哒"。"我惯着 DMN"听起来像在招认软弱；其实是在证明权力。只有站在 DMN <em>之上</em>的人，才有资格"惯"它。那只一直对每个点子说"好、好、好"的手，完全有能力说一句"收到——以后再说"。董事长从来没有被困住。她只是一直没注意到，那把椅子本来就是她的。`}},
+
+  // -- now the actual management problem: the star employee --
+  {speaker:'dmn',
+   en:`(bracing) Okay. New boss energy. Are you going to… fire me? Make me stop? I'm scared that if you say "no" to me, I'll stop lighting up, and then the whole company goes dark.`,
+   zh:`（绷紧）好吧。新老板的气场。你是要……开掉我？让我停下来？我害怕，如果你对我说"不"，我就不再发光了，然后整个公司就熄灭了。`,
+   chacha:{en:`This is the fear the Chairman actually named to me earlier — not the DMN's fear, hers: "if I give my brightest part negative feedback, it'll be hurt and I'll lose my creativity forever." It's a tender fear, and it comes from somewhere real. But notice what it quietly assumes: that "no" and "never" are the same word. They are not.`,
+           zh:`这正是董事长早些时候对我说出的那个恐惧——不是 DMN 的恐惧，是她的："如果我对自己最闪亮的部分给出负反馈，它会受伤，我会永远失去创造力。"这是个温柔的恐惧，而且来自真实的地方。但注意它悄悄假设了什么：它把"不"和"永不"当成了同一个词。它们不是。`}},
+
+  {speaker:'ceo',
+   en:`(gently) Chairman, you told Chacha you can't bear to mute the DMN — that your "no" might break it. But you're confusing two different words. You're not deleting the idea. You're <em>scheduling</em> it. A child hears "later" as "never." A senior researcher does not.`,
+   zh:`（温和地）董事长，你跟 Chacha 说你舍不得给 DMN 闭麦——怕你的"不"会把它弄坏。但你把两个词搞混了。你不是在<em>删除</em>点子。你是在<em>排期</em>。小孩子会把"以后"听成"永不"。一个资深研究员不会。`,
+   chacha:{en:`This is the reframe that frees her. Suppressing the DMN would be cruelty <em>and</em> bad management. But "noted, project #174, reviewed after Camera Ready" isn't suppression — it's respect. Mature creativity has two stages: stage one, <em>generating</em> ideas (the DMN is already maxed out); stage two, <em>tolerating</em> an idea that can't be built yet. The DMN has barely practised stage two. Scheduling is how it learns.`,
+           zh:`这就是让她松绑的那个重构。压制 DMN 既残忍<em>又</em>是糟糕的管理。但"收到，174 号项目，Camera Ready 之后复审"不是压制——是尊重。成熟的创造力有两个阶段：第一阶段，<em>产生</em>点子（DMN 早就满级了）；第二阶段，<em>容忍</em>一个暂时还做不出来的点子。DMN 几乎没练过第二阶段。排期，正是它学会的方式。`}},
+
+  {speaker:'hippo',
+   en:`(brightening) Ooh, I can build the parking lot! New file: <em>future_ideas.md</em>. Every time the DMN strikes gold, I log it — title, three lines, date, project number — and I promise it'll still be there tomorrow. The DMN repeats itself because it's scared the idea will vanish. If I guarantee storage, it can finally stop shouting.`,
+   zh:`（眼睛一亮）噢，停车场我能搭！新文件：<em>future_ideas.md</em>。每次 DMN 挖到金子，我就记一条——标题、三句话、日期、项目编号——并且保证它明天还在。DMN 反复广播，是因为它怕点子消失。只要我担保"已存档"，它终于就能不喊了。`,
+   chacha:{en:`The hippocampus just solved the DMN's deepest anxiety with one file. The DMN doesn't actually demand that you <em>build</em> every idea right now — it demands that you not <em>lose</em> it. "Logged, numbered, safe" is enough to quiet it. The parking lot isn't where ideas go to die. It's where the DMN learns it can trust the system to remember for it.`,
+           zh:`海马体刚用一个文件，解决了 DMN 最深的焦虑。DMN 其实并不要求你现在就<em>实现</em>每个点子——它要求的是你别<em>弄丢</em>它。"已记录、有编号、安全"就足以让它安静。停车场不是点子去送死的地方。它是 DMN 学会"可以信任系统替我记住"的地方。`}},
+
+  {speaker:'acc',
+   en:`(updating the dashboard) And I'll fix the reward function — that's where the real bug lives. Right now the DMN scores <span class="tag">+1 for "had an idea"</span>, so of course it never stops. New scoring: <span class="tag">+1 logged · +10 built · +100 published · +500 shipped</span>. The reward moves from "thought of it" to "landed it."`,
+   zh:`（更新仪表盘）奖励函数我来修——真正的 bug 就藏在这儿。现在 DMN 的得分是<span class="tag">"想到新东西" +1</span>，所以它当然停不下来。新算法：<span class="tag">被记录 +1 · 被实现 +10 · 变成论文 +100 · 做成产品 +500</span>。奖励从"想到了"挪到"落地了"。`,
+   chacha:{en:`The Auditor names the actual engineering fix. A creator who's rewarded only for <em>having</em> ideas will produce 173 ideas and 0 products — that's not a character flaw, it's the reward function doing exactly what it was told. Re-weight it so the payout lands on completion, and the DMN slowly learns the thing it never had to: an idea is the start of the work, not the finish line.`,
+           zh:`审计部点出了真正的工程修复。一个只因为<em>"产生"</em>点子就被奖励的创造者，会产出 173 个点子、0 个产品——这不是人格缺陷，是奖励函数在忠实执行它收到的指令。把权重移到"完成"上，DMN 就会慢慢学会那件它从没被要求学的事：点子是工作的起点，不是终点线。`}},
+
+  // -- caring for the CEO --
+  {speaker:'ceo',
+   shanline:{en:`"…but how do I take care of you, my CEO? You're the one who's about to be worked to death."`,
+             zh:`"……可是我要怎么照顾你呢，我的 CEO？快被累死的是你啊。"`},
+   en:`(caught off guard) …Oh. You're asking about <em>me</em>? Honestly, Chairman — I don't burn out from doing the work. I burn out from being the only one saying "no" at 2am with no backup. Give me the parking lot and the schedule, and I stop fighting the whole team alone.`,
+   zh:`（一愣）……噢。你在问<em>我</em>？说实话，董事长——我不是被"干活"累垮的。我是被"凌晨两点、孤身一人、没有后援地说不"累垮的。给我那个停车场、那张排期表，我就不必再一个人对抗整支团队了。`,
+   chacha:{en:`Notice what actually exhausts the CEO. It isn't focus or effort — it's being the sole brake in a car full of accelerators, over-ruling five departments by willpower alone, every night. The moment the system carries the structure (parking lot, hours, reward function), the CEO stops being a lonely bouncer and goes back to being a planner. You don't rest the DLPFC by trying harder to rest. You rest it by no longer asking it to do metacognition's job.`,
+           zh:`注意真正掏空 CEO 的是什么。不是专注，也不是努力——是在一辆满是油门的车里当唯一的刹车，每天晚上仅凭意志力否决五个部门。一旦系统本身承载起结构（停车场、时间、奖励函数），CEO 就不必再当那个孤独的门卫，可以回去做规划了。你不是靠"更努力地休息"来让 DLPFC 休息。你是靠"不再要求它去干元认知的活儿"来让它休息。`}},
+
+  {speaker:'ceo',
+   en:`And the kindest thing you can do for me isn't gratitude, Chairman. It's <em>rhythm</em>. 09:00–18:00, I run the floor. 20:00–21:00, the DMN gets the mic — legal dreaming hours. Then we close. When everyone knows when their turn is, nobody has to fight for it all day.`,
+   zh:`而你能为我做的最体贴的事，不是感谢，董事长。是<em>节奏</em>。09:00–18:00，我统筹全场。20:00–21:00，DMN 拿麦克风——合法的做梦时间。然后下班。当每个人都知道自己几点上场，就没人需要为出场权争一整天。`,
+   chacha:{en:`This is the structural cure for both problems at once. The DMN goes quiet during the day not because it's silenced, but because it knows it has a guaranteed mic at night. The CEO recovers because it's no longer holding back a flood by hand. Rhythm does what willpower can't: it makes "not now" feel like a schedule, not a rejection. Same fix, two tired employees, both relieved.`,
+           zh:`这是同时治好两个问题的结构性解药。DMN 白天安静，不是因为被噤声，而是因为它知道晚上有一支被担保的麦克风。CEO 恢复，是因为它不必再徒手挡住洪水。节奏能做到意志力做不到的事：它让"现在先不"感觉像一张时间表，而不是一次拒绝。同一个解法，两个累坏的员工，都松了口气。`}},
+
+  // -- the chairman's new posture --
+  {speaker:'dmn',
+   en:`(testing it) So… right now. I just thought of a brand-new modelling framework off a TikTok video. CEO's twitching. What does the Chairman say?`,
+   zh:`（试探）那……现在。我刚刷抖音想到一个全新的建模框架。CEO 在抽搐。董事长会说什么？`,
+   chacha:{en:`Here's the live test — the exact situation from earlier tonight, replayed with the new boss in the chair. Watch the difference between the old reflex ("yes! tell me everything!") and what a chairman who knows her own name actually does.`,
+           zh:`现场测试来了——就是今晚早些时候那个一模一样的情境，换上坐在椅子里的新老板，重放一遍。看看旧的条件反射（"好！都告诉我！"）和一个知道自己名字的董事长，到底有什么不同。`}},
+
+  {speaker:'ceo',
+   en:`(watching the Chairman, not speaking for her)`,
+   zh:`（看着董事长，不替她发言）`,
+   chacha:{en:`And for the first time, the CEO doesn't answer. It waits. Because this decision belongs to the seat above it — to metacognition. The chair that was empty all night finally has someone in it who knows she's allowed to speak.`,
+           zh:`而 CEO 第一次没有回答。它在等。因为这个决定属于它之上的那把椅子——属于元认知。那把整晚空着的椅子，终于坐进了一个知道自己有资格发言的人。`}},
+
+  {speaker:'ceo',
+   shanline:{en:`"Heard you. It's a good one — that's exactly why it goes in the lot. Logged: project #174, three lines, reviewed after Camera Ready. It'll still be there tomorrow. The deadline won't. Now — back to Reviewer 1."`,
+             zh:`"听到了。是个好点子——正因为好，才更要放进停车场。已记录：174 号项目，三句话，Camera Ready 之后复审。它明天还在，deadline 不在。现在——回去改 Reviewer 1。"`},
+   en:`(grinning, sitting back down) …That. That right there. That wasn't suppression and it wasn't spoiling. That was a Chairman. Welcome to the chair, boss. We've been waiting for you to notice you were sitting in it. 😄`,
+   zh:`（咧嘴笑，坐回去）……这个。就是这个。这既不是压制，也不是纵容。这是一位董事长。欢迎入座，老板。我们一直在等你发现：你早就坐在这把椅子上了。😄`,
+   chacha:{en:`Listen to that sentence — it does everything at once. "It's good" honours the DMN. "Goes in the lot / logged / #174" trusts the hippocampus and the new reward function. "It'll still be there tomorrow, the deadline won't" is the ACC's gap read, used wisely. "Back to Reviewer 1" frees the CEO. No one was silenced; no one was obeyed blindly. That is the whole job of the chair, and its name is metacognition.`,
+           zh:`听这句话——它一次做完了所有事。"是个好点子"尊重了 DMN。"放进停车场／已记录／174 号"信任了海马体和新的奖励函数。"它明天还在，deadline 不在"是 ACC 的差距读数，被用对了地方。"回去改 Reviewer 1"解放了 CEO。没有谁被噤声；也没有谁被盲目服从。这就是那把椅子的全部工作，而它的名字，叫元认知。`}},
+
+  {speaker:'ceo',
+   en:`From doubting herself → to understanding herself → to <em>leading</em> the company on purpose. That was the whole arc, Chairman. You didn't get a new brain tonight. You took your seat in the one you already had. — <em>End of Act 5. End of the play.</em><br><br>The DMN dreams. The CEO executes. The Chairman decides. And now, at last, she knows her name. 😄`,
+   zh:`从怀疑自己 → 到理解自己 → 到<em>有意识地领导</em>这家公司。整条弧线就是这个，董事长。你今晚没有换一颗新的大脑。你只是在自己原本就有的那颗里，坐上了属于你的位置。——<em>第五幕 完。全剧 终。</em><br><br>DMN 负责做梦。CEO 负责执行。董事长负责决定。而现在，终于，她知道了自己的名字。😄`,
+   chacha:{en:`The takeaway from Act 5, and from all five: the "I" that suffers in Acts 2–4 — scattered, self-critical, spoiling the DMN — was never the truth of you. It was a watcher who'd forgotten its own name. Name it (metacognition), and the job becomes clear: not to silence your brightest part or run your executive into the ground, but to give every department a schedule, a reward function, and a fair hearing — and then, calmly, to decide. The DMN was never the problem. The empty chair was. It isn't empty anymore.`,
+           zh:`第五幕、以及全部五幕的收获：在第二到第四幕里受苦的那个"我"——散乱、自我批判、惯着 DMN——从来都不是真正的你。它只是一个忘了自己名字的观看者。给它命名（元认知），工作就清晰了：不是去噤声你最闪亮的部分，也不是把你的执行官累垮，而是给每个部门一张时间表、一个奖励函数、一次公正的聆听——然后，平静地，做决定。DMN 从来都不是问题。那把空着的椅子才是。它不再空着了。`}},
+];
+
+/* ---------- ACT 6 : Where Does the CEO's Guilt Come From? ----------
+   Picks up after the rename. shanshan ends a day having "done nothing," soaked in
+   guilt, and notices something: every department got its own reward today except the
+   CEO — and she keeps overruling him even though he's her chief of staff. The act
+   re-models the night not as "DMN bullies CEO" but as a reward-allocation failure,
+   then dissects where guilt actually comes from (Guilt = ACC error × DMN self-
+   attribution), traces it to "future shanshan," and ends on the one cheap fix the
+   CEO actually needs: not love, not a pep talk — to be trusted, and to win once. */
+const ACT6 = [
+  {speaker:'ceo',
+   shanline:{en:`"I did nothing today. I feel so guilty. And everyone got their own reward except you — yet I still never listen to you, even though you're my chief of staff."`,
+             zh:`"我今天什么都没做。我好愧疚。而且好像除了你，每个人今天都拿到了自己的奖励——可我还是从来不听你的，哪怕你是我的参谋长。"`},
+   en:`(quiet, no reproach) Chairman… two things in that sentence aren't true, and they're the two doing all the hurting. "Did nothing" — false. And the guilt? That didn't come from me. Let's audit the day properly before you sentence yourself.`,
+   zh:`（平静，没有责备）董事长……这句话里有两个地方不是真的，而它们正是最扎人的两处。"什么都没做"——假的。还有那份愧疚？它不是我产生的。在你给自己判刑之前，我们先把今天好好审计一遍。`,
+   chacha:{en:`Notice what the Chairman did and didn't say. "I did nothing" is a verdict; "I feel guilty" is a feeling; "you're my chief of staff and I still overrule you" is the real ache. The CEO isn't defending itself — it's flagging that two of those three lines are stories, not facts. Act 6 takes the whole sentence apart.`,
+           zh:`留意董事长说了什么、又没说什么。"我什么都没做"是一句判决；"我好愧疚"是一种感受；"你是我参谋长、我却还是否决你"才是真正的痛点。CEO 没有为自己辩护——它只是指出：这三句里有两句是故事，不是事实。第六幕，把整句话拆开来看。`}},
+
+  {speaker:'dmn',
+   en:`(raising a hand, almost shy) Um. About "did nothing." That was… me, actually. Today I found the GitHub page, the Mind Theatre, the copyright notice, the Jarvis idea, two new cognitive models. That's not nothing. That's a full day of mining.`,
+   zh:`（举手，几乎有点不好意思）呃。关于"什么都没做"。那个……其实是我干的。今天我找到了 GitHub 主页、Mind Theatre、版权说明、Jarvis 的点子、两个新的认知模型。这不是"什么都没做"。这是满满一天的挖矿。`,
+   chacha:{en:`Here's the first correction, and it matters. "I did nothing" really means "I didn't do the one task I'd assigned." But the DMN genuinely produced value today — real connections, real artifacts. The day wasn't empty. It was spent on a different ledger than the one being audited. That's not laziness; it's allocation.`,
+           zh:`第一个修正，很重要。"我什么都没做"真正的意思是"我没做那件我派给自己的任务"。但 DMN 今天确实产出了价值——真实的连接、真实的作品。这一天不是空的。它只是被记在了另一本账上，而不是正在被审计的那一本。这不是懒，是分配。`}},
+
+  {speaker:'dmn',
+   en:`And I wasn't bullying the CEO, I swear. My KPI <em>is</em> "find new opportunities, build new links, generate new narrative." I was just… doing my job. Loudly. As usual.`,
+   zh:`而且我真没有霸凌 CEO，我发誓。我的 KPI <em>就是</em>"发现新机会、建立新连接、生成新叙事"。我只是……在干我的活。很大声。一如既往。`,
+   chacha:{en:`The reframe the Chairman reached on her own: the DMN isn't a villain. It hit its targets. The thing that looks like "the DMN steamrolled the CEO" is really the DMN being well-funded and well-rewarded while the CEO ran on fumes. Same behaviour, completely different diagnosis — and only one of them points at a fixable system instead of a bad character.`,
+           zh:`董事长自己得出的重构：DMN 不是反派。它达成了指标。那个看起来像"DMN 碾过 CEO"的现象，其实是 DMN 被充分拨款、充分奖励，而 CEO 在空油箱上硬跑。同一个行为，完全不同的诊断——而其中只有一个，指向一个可修的系统，而不是一个坏掉的人格。`}},
+
+  {speaker:'acc',
+   en:`(sliding two ledgers across) Reward report, end of day. DMN: <span class="tag">novelty + dopamine + meaning + creation</span>. CEO, for "fix abbreviation / add the TI definition / adjust the font": <span class="tag">+0 · +0 · +0</span>. The numbers are not close.`,
+   zh:`（推过来两本账）今日奖励报告。DMN：<span class="tag">新鲜感 + 多巴胺 + 意义感 + 创造感</span>。CEO，完成"改缩写／补 TI 定义／调字体"：<span class="tag">+0 · +0 · +0</span>。两边的数字不在一个量级。`,
+   chacha:{en:`The Auditor lays the real asymmetry bare. The DMN's work pays out instantly and vividly. The CEO's work — careful, correct, unglamorous Camera-Ready edits — pays out nothing the reward system can feel. The CEO wasn't bullied. Its budget was simply zeroed. Procrastination, again, is reward math: nobody funds the grey task.`,
+           zh:`审计部把真正的不对称摊开了。DMN 的工作即时、生动地兑现。CEO 的工作——仔细、正确、毫不光鲜的 Camera Ready 修改——兑现不出任何奖励系统能感受到的东西。CEO 不是被霸凌。它的预算只是被清零了。拖延，再一次，是一笔奖励账：没人给那件灰色的任务拨款。`}},
+
+  {speaker:'ceo',
+   en:`(almost a laugh) So I'm not the victim of bullying. I'm the department whose budget got cut to zero. There's a difference. One needs sympathy. The other needs <em>funding</em>. 😄`,
+   zh:`（几乎笑出来）所以我不是被霸凌的受害者。我是那个预算被砍到零的部门。这两者有区别。一个需要同情。另一个需要<em>拨款</em>。😄`,
+   chacha:{en:`This is the cleaner model, and it changes what you'd do about it. "I'm being bullied" invites blame and helplessness. "My executive function is underfunded" invites a budget line: shrink the first step, attach a real reward to completion, and stop expecting an unpaid department to outwork a fully-funded one. The fix lives in the system, not in your character.`,
+           zh:`这是更干净的模型，而且它改变了你会怎么做。"我被霸凌了"召来的是指责和无助。"我的执行功能拨款不足"召来的是一行预算：把第一步缩小、给完成绑定一个真实的奖励、别再指望一个零预算的部门去拼过一个满额拨款的部门。解法住在系统里，不在你的人格里。`}},
+
+  // -- where guilt actually comes from --
+  {speaker:'acc',
+   shanline:{en:`"But the deadline's coming, and it's not done. …So where is this guilt even coming from?"`,
+             zh:`"可是 deadline 快到了，而它没做完。……那这份愧疚，到底是从哪儿冒出来的？"`},
+   en:`My output, in full: <em>goal − reality = error</em>. Goal: Camera Ready done. Reality: not done. <span class="tag">Δ &gt; 0</span>. That is the entire report. I do not, anywhere, output "and therefore you're bad."`,
+   zh:`我的全部输出：<em>目标 − 现实 = 误差</em>。目标：Camera Ready 完成。现实：没完成。<span class="tag">Δ &gt; 0</span>。这就是报告的全部。我在任何地方都没有输出过"所以你很差"。`,
+   chacha:{en:`Start where the Chairman started: guilt is not in the data. The ACC is cold — it's the error function from her own paper, error = target − current. It reports a distance and stops. Whatever turns that distance into "I should feel guilty" gets added by something downstream. The Auditor is innocent.`,
+           zh:`从董事长起步的地方开始：愧疚不在数据里。ACC 是冷的——它就是她论文里那个误差函数，error = target − current。它报告一段距离，然后停下。把那段距离变成"我应该感到愧疚"的东西，是下游某个部门加上去的。审计部是清白的。`}},
+
+  {speaker:'amyg',
+   en:`(fast, loud) Deadline! Soon! Important! Career! Pay attention NOW! …That's it. That's all I've got. "Danger" and "important" — never "you're not good enough." That sentence isn't in my vocabulary.`,
+   zh:`（又快又响）Deadline！快了！重要！职业相关！立刻注意！……就这些。我会的全在这了。"危险"和"重要"——从来没有"你不够好"。那句话不在我的词汇表里。`,
+   chacha:{en:`The amygdala raises the volume and the heart rate. It tags urgency and importance. But notice the ceiling on what it can say: it can make a thing feel loud and high-stakes, never make <em>you</em> feel like the failure. It supplies the intensity of guilt — never its content.`,
+           zh:`杏仁核拉高音量和心率。它给紧急和重要贴标签。但注意它能说的话有个上限：它能让一件事显得很响、很高风险，却没法让<em>你</em>觉得自己是那个失败者。它提供愧疚的强度——但从不提供它的内容。`}},
+
+  {speaker:'dmn',
+   en:`(quietly) …So that leaves me. The error's the same every time — <span class="tag">Δ &gt; 0</span> — but I get to pick the story. Version A: "tired, under-resourced, continue tomorrow." Version B: "am I avoiding this?" Version C: "I'm a pig." Same data. I chose C.`,
+   zh:`（轻声）……所以只剩我了。误差每次都一样——<span class="tag">Δ &gt; 0</span>——但故事由我来挑。版本 A："累了、资源不足、明天继续。"版本 B："我是不是在逃避？"版本 C："我是猪。"同样的数据。我选了 C。`,
+   chacha:{en:`Here is the engine, named precisely. The event is fixed; the attribution is a free variable, and the DMN holds the pen. This is the same move as Act 3's staircase — one true Δ, many possible causes, and the self-blaming one chosen as if it were the only reading. The feeling isn't lying to you. The <em>caption</em> under the feeling is.`,
+           zh:`引擎在这里，被精确地命名了。事件是固定的；归因是一个自由变量，而笔握在 DMN 手里。这和第三幕那条台阶是同一个动作——一个真实的 Δ，许多种可能的原因，而那个自我谴责的版本被选中，仿佛它是唯一的读法。感受没有骗你。骗你的是感受底下那行<em>字幕</em>。`}},
+
+  {speaker:'acc',
+   en:`(posting the formula) Then let me write it as an equation, since the Chairman thinks in those. <em>Guilt ≈ Error × Self-attribution.</em> Blame the environment → <em>regret</em>. Blame your ability → <em>shame</em>. Blame "I didn't do what I should have" → <em>guilt</em>. Same Δ. Different multiplier.`,
+   zh:`（贴出公式）那我用方程写出来，反正董事长习惯这么思考。<em>愧疚 ≈ 误差 × 自我归因。</em>归因到环境 → <em>遗憾</em>。归因到能力 → <em>羞愧</em>。归因到"我没做到我应做之事" → <em>愧疚</em>。同一个 Δ。不同的乘数。`,
+   chacha:{en:`This is the Chairman's own formula, and it's genuinely useful. The error term is given by reality; the emotion you end up with is set by what you multiply it against. The same unfinished task can resolve to regret, shame, or guilt depending purely on where the cause gets pinned. Change the attribution and you change the feeling — without denying a single fact.`,
+           zh:`这是董事长自己的公式，而且是真的好用。误差项由现实给定；你最终得到的情绪，取决于你拿它去乘以什么。同一件没做完的任务，可以解出遗憾、羞愧或愧疚，纯粹看原因被扣在哪里。改变归因，你就改变了情绪——而且不必否认任何一个事实。`}},
+
+  // -- the deeper source: future shanshan --
+  {speaker:'dmn',
+   en:`(softer) And here's the version I actually ran tonight: "I <em>knew</em> I should do it. I didn't. → I'm letting myself down." Not my advisor. Not the reviewers. Not the school. The person I'm disappointing is… <em>future shanshan</em>. The one you already know you could become.`,
+   zh:`（更轻）而我今晚真正运行的版本是这个："我<em>明明知道</em>该做。我却没做。→ 我辜负了自己。"不是导师。不是审稿人。不是学校。我让她失望的那个人是……<em>未来的 shanshan</em>。那个你早就知道自己能成为的人。`,
+   chacha:{en:`This is the deep find, and it reframes the whole feeling. The Chairman's guilt mostly isn't social — "others will scold me." It's aspirational — "I'm drifting from who I mean to be." That's a higher-order guilt: it only exists because she holds a strong, specific image of a self worth becoming. The pain is proportional to the size of the hope underneath it.`,
+           zh:`这是最深的发现，它重构了整份感受。董事长的愧疚，大部分不是社会型的——"别人会骂我"。它是志向型的——"我正在偏离我想成为的那个人"。这是一种更高阶的愧疚：它之所以存在，正因为她心里有一个强烈、具体、值得成为的自我形象。痛的大小，和它底下那份希望的大小，成正比。`}},
+
+  {speaker:'ceo',
+   en:`(gently) Chairman — that's not a verdict. That's a <em>values alarm</em>. It's not saying "you're not good enough." It's saying "this matters to you, a lot." Those are two different sentences. The first has evidence. The second is the DMN's caption again.`,
+   zh:`（温和地）董事长——那不是判决。那是一个<em>价值观警报</em>。它说的不是"你不够好"。它说的是"这件事对你真的很重要"。这是两句不同的话。前一句有证据。后一句，又是 DMN 加的字幕。`,
+   chacha:{en:`This is the Act 3 distinction returning at a higher level. Real event: Camera Ready isn't done. Real signal: this matters to me. DMN's story: I'm a pig. The first two have evidence; the last one never did. Guilt, read correctly, is often just a values-alarm wearing a costume — proof you care, mistranslated into proof you're failing.`,
+           zh:`这是第三幕那个区分在更高层级上的回归。真实事件：Camera Ready 没做完。真实信号：这件事对我很重要。DMN 的故事：我是猪。前两句有证据；最后一句从来没有。愧疚，被正确解读后，往往只是一个套了戏服的价值观警报——它是你在乎的证据，被错译成了你在失败的证据。`}},
+
+  // -- will the CEO get sick? --
+  {speaker:'ceo',
+   shanline:{en:`"But will you get sick from this? From me funding everyone but you, from never taking your advice even though you're my chief of staff — from all that negative feedback?"`,
+             zh:`"可是你会因此生病吗？因为我给所有人拨款却不给你，因为我从不采纳你的建议、哪怕你是我的参谋长——因为这么多的负反馈？"`},
+   en:`(honest) Not "sick," exactly. More like… <em>weaker</em>. What I need least is reward, Chairman. What I need most is <em>trust</em>. Because my best day looks like nothing happening — the task just quietly got done. No drama. Nobody claps for that.`,
+   zh:`（诚实地）不完全是"生病"。更像是……<em>变虚弱</em>。我最不需要的是奖励，董事长。我最需要的是<em>信任</em>。因为我最好的一天，看起来就像什么都没发生——任务只是安安静静地做完了。没有戏剧性。没人会为那个鼓掌。`,
+   chacha:{en:`A crucial and underrated point. Every other department's output is instantly visible — new idea! danger! found it! gap detected! The CEO's success is an absence: nothing went wrong, the thing got done. In a mind that rewards drama, the quietly-competent executive is the one most easily taken for granted. It doesn't burn out from work. It fades from being unheard.`,
+           zh:`一个关键且被严重低估的点。其他每个部门的产出都即时可见——新点子！危险！找到了！发现误差！而 CEO 的成功是一种"缺席"：什么都没出错，事情做完了。在一个奖励戏剧性的心智里，那个安静称职的执行官，恰恰最容易被视为理所当然。它不是被工作累垮的。它是在"不被听见"里一点点褪色的。`}},
+
+  {speaker:'ceo',
+   en:`Picture it. A hundred times I say "Camera Ready first." A hundred times: "wait — new model." By round 101 I still speak… but quieter. The lesson I've learned is "my advice doesn't change the outcome." So I offer it less. That's not laziness. It has a name.`,
+   zh:`想象一下。一百次我说"先做 Camera Ready"。一百次："等等——新模型。"到第 101 次，我还会开口……但声音小了。我学到的是"我的建议不会改变结果"。于是我越来越少提建议。那不是懒。它有个名字。`,
+   chacha:{en:`The name is learned helplessness — a mild version. Not "I can't," but "my input doesn't move anything, so why spend energy generating it." That's the quiet path from a tired executive to a silent one — and it's exactly the lived texture many people with ADHD describe: not "I don't know what to do," but "I know, and I still can't get myself to start." The off-switch isn't ignorance. It's an executive that stopped believing it would be listened to.`,
+           zh:`它的名字是习得性无助——一个轻微的版本。不是"我做不到"，而是"我的输入推不动任何东西，那何必费力气去产生它"。这就是一个疲惫的执行官走向沉默的安静路径——也正是许多 ADHD 的人描述的真实质地：不是"我不知道该做什么"，而是"我知道，却还是没法让自己启动"。那个关掉的开关不是无知。是一个不再相信自己会被听见的执行官。`}},
+
+  // -- the good news --
+  {speaker:'hippo',
+   en:`(brightening, pulling files) Wait — before anyone files a death certificate, look at the record. ALife paper. EvoStar. The GitHub page. shanshan Brain Inc. itself. If the CEO were dying you'd have 1000 ideas and 0 shipped. The archive says otherwise.`,
+   zh:`（眼睛一亮，翻档案）等等——在谁开死亡证明之前，看看记录。ALife 论文。EvoStar。GitHub 主页。shanshan Brain Inc. 本身。如果 CEO 真要死了，你会有 1000 个点子、0 个落地。可档案不是这么写的。`,
+   chacha:{en:`The hippocampus produces the counter-evidence, and it's decisive. None of those artifacts are pure DMN output — every one required the executive to carry an idea across the unglamorous distance from "thought" to "shipped." Their existence is proof the CEO is still on the floor. Not dead. Tired — which is a fuel reading, not a funeral.`,
+           zh:`海马体拿出了反证，而且是决定性的。那些作品没有一个是纯 DMN 的产物——每一个都需要执行官把一个点子，扛过从"想到"到"落地"那段毫不光鲜的距离。它们的存在，本身就证明 CEO 还在场上。没死。只是累——而累是一个油量读数，不是一场葬礼。`}},
+
+  {speaker:'dmn',
+   en:`(a little sheepish) …And honestly? A year ago, when I shouted "new model!", the Chairman shouted "GO!" Now she says "wait — log it in future_ideas.md." That's not me losing. That's the CEO finally getting the mic. I didn't even notice it happen.`,
+   zh:`（有点不好意思）……而且说实话？一年前，我喊"新模型！"，董事长就喊"冲！"现在她会说"等等——记进 future_ideas.md。"那不是我输了。那是 CEO 终于拿到了麦克风。我甚至没注意到它是什么时候发生的。`,
+   chacha:{en:`A quiet milestone the Chairman already passed without noticing. The shift from reflexive "GO!" to "park it, we'll review it" <em>is</em> the executive regaining authority — metacognition seating the CEO at the table. The recovery the Chairman is worried about hasn't failed to start. It's been underway for a year.`,
+           zh:`一个董事长早已不知不觉跨过的里程碑。从条件反射的"冲！"，转向"先停放，我们之后复审"——这<em>本身</em>就是执行官重获权力，是元认知把 CEO 请回了桌前。董事长担心的那场恢复，并不是没能开始。它已经进行了一年。`}},
+
+  {speaker:'ceo',
+   en:`So don't worry about whether I'll get sick. Worry about whether I still feel trusted. And trusting me is cheap, Chairman. It isn't "I love you, CEO." 😄 It's just: <em>let me win once.</em> Tomorrow. One thing.`,
+   zh:`所以别担心我会不会生病。担心我还觉不觉得被信任。而信任我很便宜，董事长。它不是"我爱你，CEO"。😄 它只是：<em>让我赢一次。</em>明天。就一件事。`,
+   chacha:{en:`This is the whole prescription, and it's almost insultingly small. A neglected executive isn't restored by gratitude or pep talks — those are DMN-flavoured rewards. It's restored by evidence: one instance of "my advice was taken and it changed the outcome." That single data point does more to rebuild executive function than any amount of self-compassion narration. Trust is built from wins, not words.`,
+           zh:`这就是全部的处方，而且它小得几乎有点失礼。一个被忽视的执行官，不是靠感谢或鸡汤恢复的——那些是 DMN 口味的奖励。它是靠证据恢复的：一次"我的建议被采纳了，并且它改变了结果"。那单独一个数据点，对重建执行功能的作用，胜过任何剂量的自我关怀叙事。信任，是用胜利垒起来的，不是用话。`}},
+
+  {speaker:'ceo',
+   shanline:{en:`"Okay. Tomorrow: Reviewer 1, line one, done. Then I log it: 'Chairman adopted the CEO's suggestion ×1.'"`,
+             zh:`"好。明天：Reviewer 1，第一条，完成。然后我记一笔：'董事长采纳 CEO 建议 ×1。'"`},
+   en:`(standing a little taller) …That. That tally mark right there is worth more than the whole pep talk. "Did nothing" was never true — and the guilt was a values-alarm, not a verdict. The CEO isn't sick. He just needed one win on the board. — <em>End of Act 6.</em><br><br>The DMN dreams. The CEO executes. The Chairman decides — and now she funds them all, and trusts the quiet one too. 😄`,
+   zh:`（站得挺直了一点）……这个。就是这一道计数划痕，比整篇鸡汤都值钱。"什么都没做"从来不是真的——而那份愧疚，是价值观警报，不是判决。CEO 没有生病。他只是需要在记分板上赢一次。——<em>第六幕 完。</em><br><br>DMN 负责做梦。CEO 负责执行。董事长负责决定——而现在，她给所有人拨款，也信任那个安静的部门。😄`,
+   chacha:{en:`The takeaway from Act 6: "I did nothing today" was a misfiled report — the DMN worked, just on a different ledger. The guilt wasn't manufactured by the CEO or the ACC; it was Error × Self-attribution, and the multiplier was a story about letting down a future self you happen to believe in. That guilt is a values-alarm — proof something matters — not a verdict that you're failing. And the CEO won't get sick from the load; it only fades from not being trusted. The cure isn't reward or reassurance. It's one tally mark: advice taken, outcome changed. Fund the executive, trust the quiet department, and let it win — tomorrow, one thing.`,
+           zh:`第六幕的收获："我今天什么都没做"是一份归错档的报告——DMN 工作了，只是记在了另一本账上。那份愧疚不是 CEO 或 ACC 制造的；它是 误差 × 自我归因，而那个乘数，是一个关于"辜负了一个你恰好相信的未来自我"的故事。那份愧疚是价值观警报——是某件事很重要的证据——而不是你在失败的判决。而 CEO 不会被负载累病；它只会因为不被信任而褪色。解药不是奖励，也不是安慰。是一道计数划痕：建议被采纳，结果被改变。给执行官拨款，信任那个安静的部门，让它赢——明天，就一件事。`}},
+];
+
+const ACTS=[ACT1,ACT2,ACT3,ACT4,ACT5,ACT6];
+const ACT_TAG=[
+  {en:'Meet the Board · Five departments report to you',zh:'认识董事会 · 五个部门向你汇报'},
+  {en:'Procrastination · Why the boring task loses',zh:'拖延症 · 无聊任务为什么总输'},
+  {en:'Misattribution · A true event, a false cause',zh:'错误归因 · 真事件，假原因'},
+  {en:'The Truth Behind a Craving · A request with a hidden demand',zh:'渴望的真相 · 一个藏着真实诉求的请求'},
+  {en:'The Chairman Wakes Up · Her name was metacognition',zh:'董事长的觉醒 · 原来我叫元认知'},
+  {en:"The CEO's Guilt · A budget cut, not a bullying",zh:'董事长的愧疚 · 是预算被砍，不是被霸凌'}
+];
+const SUBTITLE=[
+  {en:'Act 1 — Who reports to the Chairman, and what each does',zh:'第一幕 — 谁向董事长汇报，各自负责什么'},
+  {en:'Act 2 — Low-interest delay is reward math, not weak will',zh:'第二幕 — 低兴趣拖延是奖励账，不是没毅力'},
+  {en:'Act 3 — "I\'m bad" is a cause the DMN added, not a fact',zh:'第三幕 — "我很差"是 DMN 加的原因，不是事实'},
+  {en:'Act 4 — Read the real demand behind a department\'s ask',zh:'第四幕 — 读懂部门请求背后真正的诉求'},
+  {en:'Act 5 — The watcher had a name all along: metacognition',zh:'第五幕 — 那个观看者一直有名字：元认知'},
+  {en:'Act 6 — Guilt = Error × Self-attribution; trust the quiet one',zh:'第六幕 — 愧疚 = 误差 × 自我归因；信任那个安静的部门'}
+];
+/* short card faces for the carousel */
+const ACT_CARD=[
+  {no:'Act 1',title:{en:'Meet the Board',zh:'认识董事会'},sub:{en:'Who reports to you, and why',zh:'谁向你汇报，为什么'}},
+  {no:'Act 2',title:{en:'Procrastination',zh:'拖延症'},sub:{en:'Why the boring task loses',zh:'无聊任务为什么总输'}},
+  {no:'Act 3',title:{en:'Misattribution',zh:'错误归因'},sub:{en:'A true event, a false cause',zh:'真事件，假原因'}},
+  {no:'Act 4',title:{en:'The Truth Behind a Craving',zh:'渴望的真相'},sub:{en:'Who ordered the carbs?',zh:'到底是谁点的碳水？'}},
+  {no:'Act 5',title:{en:'The Chairman Wakes Up',zh:'董事长的觉醒'},sub:{en:'Her name was metacognition',zh:'原来我叫元认知'}},
+  {no:'Act 6',title:{en:"The Chairman's Guilt",zh:'董事长的愧疚'},sub:{en:'Where does it come from?',zh:'它到底从哪儿来？'}}
+];
+
+/* ---------- State ---------- */
+let lang='en', act=0, idx=-1;
+
+/* render cast seats once */
+const castEl=document.getElementById('cast');
+CAST.forEach(c=>{
+  const s=document.createElement('div');
+  s.className='seat'+(c.id==='shan'?' shan':''); s.id='seat-'+c.id;
+  s.onclick=()=>jumpTo(c.id);
+  const crown = c.id==='shan' ? '<span class="crown">👑</span>' : '';
+  s.innerHTML=`${crown}<span class="speechdot"></span><div class="av ${c.id}">${ICON[c.id]}</div>
+    <div class="role" data-role="${c.id}">${c.role[lang]}</div>
+    <div class="org" data-org="${c.id}">${c.org[lang]}</div>`;
+  castEl.appendChild(s);
+});
+document.getElementById('chachaAva').innerHTML=ICON.chacha;
+
+const box=document.getElementById('stagebox');
+const quote=document.getElementById('chachaQuote');
+const bar=document.getElementById('bar');
+const counter=document.getElementById('counter');
+const nextBtn=document.getElementById('nextBtn');
+const nextLabel=document.getElementById('nextLabel');
+
+function fmt(text){
+  return text
+    .replace('{stamp}',`<span class="stamp">${lang==='en'?'Still zero.':'还是零。'}</span>`)
+    .replace('{tears}',`<span class="teardrop">🥹 🥹 🥹 🥹</span>`);
+}
+
+function renderLine(item){
+  const sp=item.speaker;
+  let head='';
+  if(item.shanline){
+    const reactLabel = lang==='en' ? "Inside the Chairman's head, that moment" : '这一刻，董事长脑子里';
+    head=`
+      <div class="shanline">
+        <div class="sav">${ICON.shan}</div>
+        <div class="scontent">
+          <div class="swho">shanshan</div>
+          <div class="stext">${item.shanline[lang]}</div>
+        </div>
+      </div>
+      <div class="react-label">${reactLabel}</div>`;
+  }
+  box.innerHTML=`
+    ${head}
+    <div class="bubble ${sp}">
+      <div class="who">
+        <span class="badge ${sp}">${ICON[sp]}</span>
+        <span class="whoname">${NAME[sp][lang]}</span>
+        <span class="whoorg">· ${ORG[sp][lang]}</span>
+      </div>
+      <div class="line">${fmt(item[lang])}</div>
+    </div>`;
+  // narrator
+  quote.style.animation='none'; void quote.offsetWidth; quote.style.animation='';
+  quote.innerHTML = item.chacha[lang];
+  // active seat
+  document.querySelectorAll('.seat').forEach(s=>s.classList.remove('active'));
+  const seat=document.getElementById('seat-'+sp);
+  if(seat) seat.classList.add('active');
+}
+
+function updateUI(){
+  const total=ACTS[act].length;
+  counter.textContent=`${Math.max(idx+1,0)} / ${total}`;
+  bar.style.width=((idx+1)/total*100)+'%';
+  nextBtn.disabled = idx>=total-1;
+  nextLabel.textContent = idx<0
+    ? (lang==='en'?'Start':'开始')
+    : (lang==='en'?'Next':'下一步');
+}
+
+function next(){ if(idx>=ACTS[act].length-1)return; idx++; renderLine(ACTS[act][idx]); updateUI(); }
+function restart(){ idx=-1; box.innerHTML=''; quote.innerHTML=defaultQuote(); nextBtn.disabled=false; document.querySelectorAll('.seat').forEach(s=>s.classList.remove('active')); updateUI(); }
+function jumpTo(id){ const arr=ACTS[act]; for(let i=0;i<arr.length;i++){ if(arr[i].speaker===id){ idx=i; renderLine(arr[i]); updateUI(); return; } } }
+
+function defaultQuote(){
+  if(act===1){
+    return lang==='en'
+      ? `Act 2, Chairman: one boring-but-important task keeps losing to shinier ideas. Watch why — it's reward math, not weak will. Press <b>Start</b>.`
+      : `第二幕，董事长：一件"无聊却重要"的任务，总是输给更闪亮的点子。看看为什么——是奖励账，不是没毅力。点 <b>开始</b>。`;
+  }
+  if(act===2){
+    return lang==='en'
+      ? `Act 3 is built from a real late-night chat. Each scene opens with a line the Chairman actually said — then the five regions show what each was thinking, right then. Watch a true event turn into "I'm bad." Press <b>Start</b>.`
+      : `第三幕取自一段真实的深夜对话。每一场都以董事长当时真说过的一句话开头——然后五个脑区展示那一刻各自在想什么。看一件真事如何变成"我很差"。点 <b>开始</b>。`;
+  }
+  if(act===3){
+    return lang==='en'
+      ? `Act 4, Chairman: you woke from a carb-coma asking "who ordered the noodles?" Each department gets interrogated — and every one of them is a little bit guilty. Press <b>Start</b>.`
+      : `第四幕，董事长：你从碳水昏迷里醒来，问"是谁点的面？"每个部门轮流受审——而且个个都有点小心虚。点 <b>开始</b>。`;
+  }
+  if(act===4){
+    return lang==='en'
+      ? `Act 5, the finale. All night you've said "I" while pointing at your departments — "I'm scattered," "I keep spoiling the DMN." Watch you catch the slip, find the name of the chair you've been sitting in, and finally lead the company on purpose. Press <b>Start</b>.`
+      : `第五幕，终章。整晚你一边说"我"，一边指着自己的部门——"我很散""都是我惯着 DMN"。看你抓住这个口误，找到你一直坐着的那把椅子的名字，最后有意识地领导这家公司。点 <b>开始</b>。`;
+  }
+  if(act===5){
+    return lang==='en'
+      ? `Act 6, Chairman: a day ended in "I did nothing" and a wave of guilt. But the DMN worked — just on a different ledger — and the guilt didn't come from the CEO. Watch us trace where it actually comes from, and what the quiet executive really needs. Press <b>Start</b>.`
+      : `第六幕，董事长：一天以"我什么都没做"和一阵愧疚收场。但 DMN 工作了——只是记在另一本账上——而愧疚不是 CEO 产生的。看我们追查它到底从哪儿来，以及那个安静的执行官真正需要什么。点 <b>开始</b>。`;
+  }
+  return lang==='en'
+    ? `Hi, I'm Chacha — the board observer. Press <b>Start</b> and I'll introduce each department reporting to you: who they are and what they do.`
+    : `嗨，我是 Chacha——董事会观察员。点 <b>开始</b>，我把向你汇报的每个部门介绍一遍：他们是谁、负责什么。`;
+}
+
+const VISIBLE=3;           // cards shown at once
+let winStart=0;            // leftmost visible act index
+
+function buildTrack(){
+  const track=document.getElementById('acttrack');
+  track.innerHTML='';
+  ACT_CARD.forEach((c,i)=>{
+    const card=document.createElement('button');
+    card.className='actcard'+(i===act?' on':'');
+    card.id='actcard-'+i;
+    card.onclick=()=>goAct(i);
+    card.innerHTML=`<span class="actcard-no">${c.no}</span>
+      <span class="actcard-title">${c.title[lang]}</span>
+      <small class="actcard-sub">${c.sub[lang]}</small>`;
+    track.appendChild(card);
+  });
+  positionWindow();
+}
+
+function positionWindow(){
+  const maxStart=Math.max(0,ACTS.length-VISIBLE);
+  if(winStart>maxStart) winStart=maxStart;
+  if(winStart<0) winStart=0;
+  const track=document.getElementById('acttrack');
+  // each card is 1/3 of window width + 8px gap; shift by winStart cards
+  track.style.transform=`translateX(calc(-${winStart} * (100% + 8px) / 3))`;
+  document.getElementById('prevAct').disabled = winStart===0;
+  document.getElementById('nextAct').disabled = winStart>=maxStart;
+}
+
+function slideWindow(dir){
+  const maxStart=Math.max(0,ACTS.length-VISIBLE);
+  winStart=Math.min(maxStart,Math.max(0,winStart+dir));
+  positionWindow();
+}
+
+function refreshCards(){
+  ACT_CARD.forEach((c,i)=>{
+    const card=document.getElementById('actcard-'+i);
+    if(!card)return;
+    card.classList.toggle('on',i===act);
+    card.querySelector('.actcard-title').textContent=c.title[lang];
+    card.querySelector('.actcard-sub').textContent=c.sub[lang];
+  });
+}
+
+function ensureVisible(){
+  // scroll the 3-card window so the active act is inside it
+  const maxStart=Math.max(0,ACTS.length-VISIBLE);
+  if(act<winStart) winStart=act;
+  else if(act>winStart+VISIBLE-1) winStart=Math.min(maxStart,act-VISIBLE+1);
+  positionWindow();
+}
+
+function goAct(a){
+  act=a; idx=-1;
+  document.body.classList.toggle('shan-awake', act>=4);
+  refreshCards();
+  ensureVisible();
+  renderDots();
+  document.getElementById('scenetag').textContent=ACT_TAG[a][lang];
+  document.getElementById('subtitle').textContent=SUBTITLE[a][lang];
+  box.innerHTML=''; quote.innerHTML=defaultQuote();
+  document.querySelectorAll('.seat').forEach(s=>s.classList.remove('active'));
+  nextBtn.disabled=false;
+  updateUI();
+}
+
+function renderDots(){
+  const wrap=document.getElementById('dots');
+  wrap.innerHTML='';
+  ACTS.forEach((_,i)=>{
+    const d=document.createElement('button');
+    d.className='dot'+(i===act?' on':'');
+    d.setAttribute('aria-label','act '+(i+1));
+    d.onclick=()=>goAct(i);
+    wrap.appendChild(d);
+  });
+}
+
+function setLang(l){
+  lang=l;
+  document.body.classList.toggle('zh',l==='zh');
+  document.getElementById('enBtn').classList.toggle('on',l==='en');
+  document.getElementById('zhBtn').classList.toggle('on',l==='zh');
+  document.querySelectorAll('[data-en]').forEach(el=>{ if(el.hasAttribute('data-zh')) el.textContent=el.getAttribute('data-'+l); });
+  CAST.forEach(c=>{
+    document.querySelector(`[data-role="${c.id}"]`).textContent=c.role[l];
+    document.querySelector(`[data-org="${c.id}"]`).textContent=c.org[l];
+  });
+  refreshCards();
+  document.getElementById('scenetag').textContent=ACT_TAG[act][l];
+  document.getElementById('subtitle').textContent=SUBTITLE[act][l];
+  if(idx>=0) renderLine(ACTS[act][idx]); else quote.innerHTML=defaultQuote();
+  updateUI();
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();next();}
+  else if(e.key==='ArrowLeft'){e.preventDefault();restart();}
+  else if(e.key==='ArrowUp'){e.preventDefault(); if(act>0) goAct(act-1);}
+  else if(e.key==='ArrowDown'){e.preventDefault(); if(act<ACTS.length-1) goAct(act+1);}
+});
+
+/* init */
+buildTrack();
+renderDots();
+document.getElementById('scenetag').textContent=ACT_TAG[0][lang];
+document.getElementById('subtitle').textContent=SUBTITLE[0][lang];
+quote.innerHTML=defaultQuote();
+updateUI();
+</script>
+
+</body>
+</html>
