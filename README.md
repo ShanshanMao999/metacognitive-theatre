@@ -8,7 +8,7 @@
 
 ## Inside the Theatre
 
-![Main Theatre](image/main-theatre.png)
+![Main Theatre](image/main_theatre.png)
 
 Shan Brain Inc. is an interactive metacognitive theatre where cognitive systems become departments inside an imaginary company.
 
