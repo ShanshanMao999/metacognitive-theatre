@@ -1,4 +1,4 @@
-# Shan Brain Inc.
+# Shanshan Brain Inc.
 
 > **A small theatre where a person learns to talk to their own mind.**
 >
