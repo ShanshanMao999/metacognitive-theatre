@@ -6,43 +6,73 @@
 
 ---
 
+## Inside the Theatre
+
+![Main Theatre](assets/screenshots/main-theatre.png)
+
+Shan Brain Inc. is an interactive metacognitive theatre where cognitive systems become departments inside an imaginary company.
+
+Each act explores a different cognitive phenomenon, including procrastination, misattribution, anxiety, emotional reasoning, decision-making, and self-reflection.
+
+Rather than presenting cognition through academic terminology alone, the project transforms internal mental processes into characters, conversations, meetings, and stories that can be observed and understood.
+
+---
+
+## The Board Observer
+
+![Board Observer](assets/screenshots/chacha-observer.png)
+
+Alongside the internal departments, an external observer named **Chacha** provides a second layer of interpretation.
+
+While the departments explain what they believe is happening, Chacha helps uncover deeper mechanisms, cognitive biases, hidden assumptions, and alternative explanations that may otherwise remain invisible.
+
+In many ways, Chacha serves as a metacognitive observer — translating what the mind is doing into language that can be examined and questioned.
+
+---
+
 ## What is Shan Brain Inc.?
 
-Shan Brain Inc. is a narrative metacognitive theatre that transforms internal cognitive processes into an imaginary company.
+Shan Brain Inc. is a narrative framework for metacognitive self-observation.
 
-In this world, cognitive systems become departments, managers, advisors, and employees:
+It began as a personal attempt to understand thoughts and emotions rather than fight them.
 
-* The Default Mode Network (DMN) becomes the creative strategist.
-* The Amygdala becomes the risk control department.
-* The Hippocampus becomes the memory director.
-* The Prefrontal Cortex becomes the executive officer.
-* The Anterior Cingulate Cortex becomes the internal auditor.
+In this fictional company:
 
-Together they form a fictional organisation responsible for perception, memory, emotion, decision-making, creativity, procrastination, and self-reflection.
+* The **Executive Officer (DLPFC)** manages planning, attention, and execution.
+* The **Head of Memory (Hippocampus)** maintains records and retrieves relevant experiences.
+* The **Head of Ideas (DMN)** generates stories, associations, imagination, and creativity.
+* The **Risk Officer (Amygdala)** identifies threats, uncertainty, and potential danger.
+* The **Auditor (ACC)** monitors conflicts, mistakes, and mismatches between expectation and reality.
+* The **Chairman** represents the observing self.
+* **Chacha** acts as an independent board observer who helps interpret the discussions.
+
+Together, they form an internal theatre where emotions, decisions, habits, and beliefs can be explored through dialogue.
 
 ---
 
 ## Why was this project created?
 
-This project began as a personal attempt to understand thoughts and emotions rather than fight them.
-
 Many difficult experiences — anxiety, procrastination, self-doubt, uncertainty, academic pressure, and everyday decision-making — often feel confusing when viewed from inside the mind.
 
-By turning cognitive processes into characters and conversations, Shan Brain Inc. attempts to make internal experiences visible, understandable, and discussable.
+Most people experience thoughts and emotions directly, but rarely have an opportunity to observe how those experiences are constructed.
+
+Shan Brain Inc. attempts to make invisible cognitive processes visible.
 
 Instead of asking:
 
-> "How do I get rid of this feeling?"
+> “How do I get rid of this feeling?”
 
 the project asks:
 
-> "Which department is speaking?"
+> “Which department is speaking?”
 >
-> "Why is it speaking?"
+> “Why is it speaking?”
 >
-> "What information is it trying to provide?"
+> “What information is it trying to provide?”
 >
-> "Is the story I am telling myself actually true?"
+> “Is the story I am telling myself actually true?”
+>
+> “What assumptions might be missing?”
 
 ---
 
@@ -50,19 +80,21 @@ the project asks:
 
 Shan Brain Inc. is built upon a simple idea:
 
-**Emotions are signals before they are problems.**
+### Emotions are signals before they are problems.
 
-Rather than suppressing thoughts or emotions, the project explores:
+The goal is not to suppress emotions.
 
-* Where they come from
-* What triggered them
-* Whether the causal explanation is accurate
-* How different cognitive systems interact
-* How self-understanding can emerge through observation
-
-The goal is not perfect control.
+The goal is not perfect self-control.
 
 The goal is understanding.
+
+Every emotion is treated as information.
+
+Every thought is treated as a hypothesis.
+
+Every explanation is treated as a story that can be examined.
+
+By slowing down and observing these processes, the project explores how self-understanding can emerge through curiosity rather than judgment.
 
 ---
 
@@ -73,8 +105,9 @@ This repository contains:
 * Interactive narrative episodes
 * Cognitive visualisation experiments
 * Character designs and dialogues
-* Personal metacognitive reflections
-* Educational explorations of cognition and decision-making
+* Metacognitive reflections
+* Narrative explorations of cognition and emotion
+* Educational content related to decision-making and self-observation
 
 ---
 
@@ -85,7 +118,8 @@ This project may be useful for:
 * People interested in cognition and metacognition
 * Students and researchers
 * Individuals experiencing anxiety, procrastination, or self-doubt
-* Anyone curious about how minds construct stories, decisions, and emotions
+* People exploring ADHD, attention, or executive functioning
+* Anyone curious about how minds construct stories, decisions, emotions, and meaning
 
 ---
 
@@ -95,7 +129,7 @@ Shan Brain Inc. is an educational and creative project.
 
 It is not intended to provide medical, psychological, or clinical advice.
 
-The characters and organisational structure are narrative metaphors used to explore cognitive processes and personal reflection.
+The departments, characters, and organisational structure are narrative metaphors designed to support reflection and understanding.
 
 ---
 
@@ -113,9 +147,9 @@ No part of this work may be reproduced, redistributed, modified, or used for com
 
 **Shanshan Mao**
 
-PhD Researcher in Multi-Agent Systems, Artificial Life, and Emergent Social Structures.
+PhD Researcher in Multi-Agent Systems, Artificial Life, Emergent Social Structures, and Human Cognition.
 
-Exploring the intersection of cognition, self-reflection, narrative, and complex adaptive systems.
+Exploring the intersection of metacognition, narrative, self-reflection, complex adaptive systems, and human growth.
 
 ---
 
