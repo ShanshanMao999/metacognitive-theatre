@@ -8,7 +8,7 @@
 
 ## Inside the Theatre
 
-![Main Theatre](assets/screenshots/main-theatre.png)
+![Main Theatre](image/main-theatre.png)
 
 Shan Brain Inc. is an interactive metacognitive theatre where cognitive systems become departments inside an imaginary company.
 
@@ -20,7 +20,7 @@ Rather than presenting cognition through academic terminology alone, the project
 
 ## The Board Observer
 
-![Board Observer](assets/screenshots/chacha-observer.png)
+![Board Observer](image/chacha.png)
 
 Alongside the internal departments, an external observer named **Chacha** provides a second layer of interpretation.
 
